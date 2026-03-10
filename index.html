@@ -5,8 +5,23 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>ProAgri Media — Social Media Management Packages 2026</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<!-- GSAP + ScrollTrigger -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+
+<!-- Lottie Player -->
+<script src="https://unpkg.com/@lottiefiles/lottie-player@2.0.8/dist/lottie-player.js"></script>
+
 <style>
+/* ===== @property for animated gradients ===== */
+@property --angle {
+  syntax: '<angle>';
+  initial-value: 0deg;
+  inherits: false;
+}
+
 *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
 :root {
@@ -23,10 +38,7 @@
   --gradient-bg: linear-gradient(135deg, #0a1628 0%, #12213a 60%, #1a0a0a 100%);
 }
 
-html {
-  scroll-behavior: smooth;
-  overflow-x: hidden;
-}
+html { scroll-behavior: smooth; overflow-x: hidden; }
 
 body {
   font-family: 'Inter', sans-serif;
@@ -40,10 +52,8 @@ body {
 body::after {
   content: '';
   position: fixed;
-  top: 0;
-  right: 0;
-  width: 6px;
-  height: 100%;
+  top: 0; right: 0;
+  width: 6px; height: 100%;
   background: linear-gradient(180deg, transparent 0%, var(--red) 30%, var(--red-bright) 50%, var(--red) 70%, transparent 100%);
   z-index: 1000;
   opacity: 0.7;
@@ -51,9 +61,7 @@ body::after {
 
 /* Scroll progress bar */
 .scroll-progress {
-  position: fixed;
-  top: 0;
-  left: 0;
+  position: fixed; top: 0; left: 0;
   height: 3px;
   background: var(--gradient-red);
   z-index: 10000;
@@ -61,12 +69,9 @@ body::after {
   transition: width 0.1s linear;
 }
 
-/* Navigation */
+/* ===== NAVIGATION ===== */
 nav {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
+  position: fixed; top: 0; left: 0; right: 0;
   z-index: 9999;
   padding: 1rem 2rem;
   display: flex;
@@ -79,38 +84,40 @@ nav {
   transition: transform 0.4s ease;
 }
 
-nav.visible {
-  transform: translateY(0);
-}
+nav.visible { transform: translateY(0); }
 
 .nav-logo {
   font-family: 'Playfair Display', serif;
-  font-size: 1.2rem;
-  font-weight: 700;
-  letter-spacing: 1px;
+  font-size: 1.2rem; font-weight: 700; letter-spacing: 1px;
 }
-
 .nav-logo span { color: var(--gray); font-weight: 400; }
 
-.nav-links {
-  display: flex;
-  gap: 2rem;
-  list-style: none;
-}
+.nav-links { display: flex; gap: 2rem; list-style: none; }
 
 .nav-links a {
   color: var(--gray);
   text-decoration: none;
-  font-size: 0.85rem;
-  font-weight: 500;
+  font-size: 0.85rem; font-weight: 500;
   letter-spacing: 0.5px;
   transition: color 0.3s;
   text-transform: uppercase;
+  position: relative;
+}
+
+.nav-links a::after {
+  content: '';
+  position: absolute;
+  bottom: -4px; left: 0;
+  width: 0; height: 1px;
+  background: var(--gold);
+  transition: width 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .nav-links a:hover { color: var(--gold); }
+.nav-links a:hover::after,
+.nav-links a.active-section::after { width: 100%; }
 
-/* Sections */
+/* ===== SECTIONS ===== */
 section {
   min-height: 100vh;
   position: relative;
@@ -118,15 +125,14 @@ section {
   align-items: center;
   justify-content: center;
   padding: 6rem 4rem;
+  overflow: hidden;
 }
 
 section::before {
   content: '';
   position: absolute;
-  top: 0;
-  right: 0;
-  width: 40%;
-  height: 100%;
+  top: 0; right: 0;
+  width: 40%; height: 100%;
   background: linear-gradient(270deg, rgba(192,57,43,0.08) 0%, transparent 100%);
   pointer-events: none;
 }
@@ -138,50 +144,76 @@ section::before {
   z-index: 2;
 }
 
-/* Animation base classes */
-.reveal {
-  opacity: 0;
-  transform: translateY(60px);
-  transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+/* ===== MORPHING BLOB BACKGROUNDS ===== */
+.blob {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.06;
+  will-change: transform;
 }
 
-.reveal.active {
-  opacity: 1;
-  transform: translateY(0);
+.blob-red {
+  width: 600px; height: 600px;
+  background: var(--red);
+  top: -200px; right: -200px;
+  animation: blob-drift-1 20s ease-in-out infinite;
 }
+
+.blob-gold {
+  width: 400px; height: 400px;
+  background: var(--gold);
+  bottom: -150px; left: -100px;
+  animation: blob-drift-2 25s ease-in-out infinite;
+}
+
+@keyframes blob-drift-1 {
+  0%, 100% { border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%; transform: translate(0, 0) scale(1); }
+  33% { border-radius: 30% 60% 70% 40% / 50% 60% 30% 60%; transform: translate(60px, -40px) scale(1.1); }
+  66% { border-radius: 50% 60% 20% 80% / 40% 70% 60% 30%; transform: translate(-30px, 30px) scale(0.9); }
+}
+
+@keyframes blob-drift-2 {
+  0%, 100% { border-radius: 50% 60% 20% 80% / 40% 70% 60% 30%; transform: translate(0, 0) scale(1); }
+  50% { border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%; transform: translate(-80px, 50px) scale(1.15); }
+}
+
+/* ===== REVEAL ANIMATIONS ===== */
+.reveal {
+  opacity: 0; transform: translateY(60px);
+  transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.reveal.active { opacity: 1; transform: translateY(0); }
 
 .reveal-left {
-  opacity: 0;
-  transform: translateX(-80px);
+  opacity: 0; transform: translateX(-80px);
   transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
 }
-
-.reveal-left.active {
-  opacity: 1;
-  transform: translateX(0);
-}
+.reveal-left.active { opacity: 1; transform: translateX(0); }
 
 .reveal-right {
-  opacity: 0;
-  transform: translateX(80px);
+  opacity: 0; transform: translateX(80px);
   transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
 }
-
-.reveal-right.active {
-  opacity: 1;
-  transform: translateX(0);
-}
+.reveal-right.active { opacity: 1; transform: translateX(0); }
 
 .reveal-scale {
-  opacity: 0;
-  transform: scale(0.85);
+  opacity: 0; transform: scale(0.85);
   transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
 }
+.reveal-scale.active { opacity: 1; transform: scale(1); }
 
-.reveal-scale.active {
-  opacity: 1;
-  transform: scale(1);
+/* Spring entrance for cards */
+@keyframes spring-in {
+  0% { opacity: 0; transform: scale(0.7) translateY(30px); }
+  60% { opacity: 1; transform: scale(1.05) translateY(-5px); }
+  80% { transform: scale(0.98) translateY(2px); }
+  100% { transform: scale(1) translateY(0); }
 }
+
+.spring-in.active { animation: spring-in 0.7s forwards; }
 
 /* Stagger delays */
 .delay-1 { transition-delay: 0.1s; }
@@ -193,7 +225,7 @@ section::before {
 .delay-7 { transition-delay: 0.7s; }
 .delay-8 { transition-delay: 0.8s; }
 
-/* ========== HERO SECTION ========== */
+/* ===== HERO SECTION ===== */
 #hero {
   min-height: 100vh;
   background: var(--gradient-bg);
@@ -203,10 +235,8 @@ section::before {
 
 .hero-bg-image {
   position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
   background: url('assets/page1_img1.jpeg') center/cover no-repeat;
   opacity: 0.15;
   filter: blur(2px);
@@ -214,17 +244,14 @@ section::before {
 
 .hero-particles {
   position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
   overflow: hidden;
 }
 
 .particle {
   position: absolute;
   border-radius: 50%;
-  background: rgba(212, 168, 35, 0.3);
   animation: float-particle linear infinite;
 }
 
@@ -246,12 +273,15 @@ section::before {
   padding: 0.4rem 1.2rem;
   border: 1px solid var(--gold);
   color: var(--gold);
-  font-size: 0.9rem;
-  font-weight: 600;
+  font-size: 0.9rem; font-weight: 600;
   letter-spacing: 3px;
   margin-bottom: 2rem;
-  opacity: 0;
-  animation: fadeInDown 1s 0.3s forwards;
+  clip-path: inset(0 100% 0 0);
+  animation: clip-reveal 0.8s 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes clip-reveal {
+  to { clip-path: inset(0 0% 0 0); }
 }
 
 .hero-title {
@@ -260,8 +290,17 @@ section::before {
   font-weight: 900;
   line-height: 1;
   margin-bottom: 0.5rem;
+}
+
+.hero-title .char-reveal {
+  display: inline-block;
   opacity: 0;
-  animation: fadeInUp 1s 0.5s forwards;
+  transform: translateY(1.2em) rotate(8deg);
+  animation: char-in 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes char-in {
+  to { opacity: 1; transform: translateY(0) rotate(0deg); }
 }
 
 .hero-title .highlight {
@@ -278,7 +317,7 @@ section::before {
   color: var(--gray);
   margin-bottom: 2rem;
   opacity: 0;
-  animation: fadeInUp 1s 0.7s forwards;
+  animation: fadeInUp 1s 0.9s forwards;
 }
 
 .hero-tagline {
@@ -287,38 +326,35 @@ section::before {
   font-weight: 300;
   font-style: italic;
   opacity: 0;
-  animation: fadeInUp 1s 0.9s forwards;
+  animation: fadeInUp 1s 1.1s forwards;
 }
 
 .hero-logos {
-  display: flex;
-  gap: 1.5rem;
+  display: flex; gap: 1.5rem;
   margin-top: 3rem;
   align-items: center;
   opacity: 0;
-  animation: fadeInUp 1s 1.1s forwards;
+  animation: fadeInUp 1s 1.3s forwards;
 }
 
 .hero-logos img {
   height: 35px;
   filter: brightness(0) invert(1);
   opacity: 0.7;
-  transition: opacity 0.3s;
+  transition: opacity 0.3s, transform 0.3s;
 }
-
-.hero-logos img:hover { opacity: 1; }
+.hero-logos img:hover { opacity: 1; transform: scale(1.1); }
 
 .scroll-indicator {
   position: absolute;
-  bottom: 2rem;
-  left: 50%;
+  bottom: 2rem; left: 50%;
   transform: translateX(-50%);
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 0.5rem;
   opacity: 0;
-  animation: fadeIn 1s 1.5s forwards;
+  animation: fadeIn 1s 1.8s forwards;
 }
 
 .scroll-indicator span {
@@ -329,8 +365,7 @@ section::before {
 }
 
 .scroll-arrow {
-  width: 24px;
-  height: 24px;
+  width: 24px; height: 24px;
   border-right: 2px solid var(--gold);
   border-bottom: 2px solid var(--gold);
   transform: rotate(45deg);
@@ -347,20 +382,13 @@ section::before {
   to { opacity: 1; transform: translateY(0); }
 }
 
-@keyframes fadeInDown {
-  from { opacity: 0; transform: translateY(-20px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
 @keyframes fadeIn {
   from { opacity: 0; }
   to { opacity: 1; }
 }
 
-/* ========== WHAT IS SM SECTION ========== */
-#what-is {
-  background: var(--gradient-bg);
-}
+/* ===== WHAT IS SM ===== */
+#what-is { background: var(--gradient-bg); }
 
 .what-is-grid {
   display: grid;
@@ -377,19 +405,14 @@ section::before {
 }
 
 .what-is-image img {
-  width: 100%;
-  display: block;
+  width: 100%; display: block;
   transition: transform 0.6s ease;
 }
-
-.what-is-image:hover img {
-  transform: scale(1.05);
-}
+.what-is-image:hover img { transform: scale(1.05); }
 
 .what-is-image::after {
   content: '';
-  position: absolute;
-  inset: 0;
+  position: absolute; inset: 0;
   background: linear-gradient(135deg, rgba(192,57,43,0.2), transparent);
   pointer-events: none;
 }
@@ -434,23 +457,21 @@ h2 .highlight {
 }
 
 .client-tags {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.75rem;
+  display: flex; flex-wrap: wrap; gap: 0.75rem;
   margin-top: 2rem;
 }
 
 .client-tag {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
+  display: flex; align-items: center; gap: 0.5rem;
   padding: 0.6rem 1.2rem;
   background: var(--gradient-badge);
   border-radius: 50px;
-  font-size: 0.85rem;
-  font-weight: 500;
+  font-size: 0.85rem; font-weight: 500;
   box-shadow: 0 4px 15px rgba(192,57,43,0.3);
   transition: transform 0.3s, box-shadow 0.3s;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
 }
 
 .client-tag:hover {
@@ -458,20 +479,22 @@ h2 .highlight {
   box-shadow: 0 8px 25px rgba(192,57,43,0.4);
 }
 
-.client-tag::before {
-  content: '◉';
-  color: var(--gold);
-  font-size: 0.7rem;
+/* Ripple effect */
+.ripple-effect {
+  position: absolute;
+  border-radius: 50%;
+  background: rgba(212, 168, 35, 0.3);
+  transform: scale(0);
+  animation: ripple-expand 0.7s ease-out forwards;
+  pointer-events: none;
 }
 
-/* ========== HOW IT WORKS ========== */
-#how-it-works {
-  background: var(--gradient-bg);
+@keyframes ripple-expand {
+  to { transform: scale(1); opacity: 0; }
 }
 
-.steps-container {
-  margin-top: 3rem;
-}
+/* ===== HOW IT WORKS ===== */
+#how-it-works { background: var(--gradient-bg); }
 
 .steps-intro {
   color: var(--gray);
@@ -486,18 +509,25 @@ h2 .highlight {
   grid-template-columns: repeat(4, 1fr);
   gap: 2rem;
   position: relative;
+  margin-top: 3rem;
 }
 
-/* Connecting line */
-.steps-grid::before {
-  content: '';
+/* Animated SVG connector */
+.steps-connector {
   position: absolute;
-  top: 32px;
-  left: 32px;
-  right: 32px;
-  height: 3px;
-  background: linear-gradient(90deg, var(--red), var(--gold), var(--red));
+  top: 32px; left: 32px; right: 32px;
+  height: 8px;
   z-index: 0;
+}
+
+.connector-line {
+  stroke-dasharray: 1100;
+  stroke-dashoffset: 1100;
+  transition: stroke-dashoffset 2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.steps-connector.active .connector-line {
+  stroke-dashoffset: 0;
 }
 
 .step-card {
@@ -507,19 +537,29 @@ h2 .highlight {
 }
 
 .step-number {
-  width: 64px;
-  height: 64px;
+  width: 64px; height: 64px;
   border-radius: 50%;
   background: var(--gradient-red);
   display: flex;
   align-items: center;
   justify-content: center;
   font-family: 'Playfair Display', serif;
-  font-size: 1.5rem;
-  font-weight: 900;
+  font-size: 1.5rem; font-weight: 900;
   margin: 0 auto 1.5rem;
   box-shadow: 0 8px 30px rgba(192,57,43,0.4);
   transition: transform 0.3s, box-shadow 0.3s;
+  position: relative;
+}
+
+/* Pulse ring on step numbers */
+@keyframes pulse-ring {
+  0% { box-shadow: 0 0 0 0 rgba(192, 57, 43, 0.4); }
+  70% { box-shadow: 0 0 0 20px rgba(192, 57, 43, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(192, 57, 43, 0); }
+}
+
+.step-number.pulsing {
+  animation: pulse-ring 2.5s ease-out infinite;
 }
 
 .step-card:hover .step-number {
@@ -529,8 +569,7 @@ h2 .highlight {
 
 .step-card h3 {
   font-family: 'Playfair Display', serif;
-  font-size: 1.2rem;
-  font-weight: 700;
+  font-size: 1.2rem; font-weight: 700;
   margin-bottom: 0.75rem;
   font-style: italic;
 }
@@ -541,10 +580,8 @@ h2 .highlight {
   line-height: 1.7;
 }
 
-/* ========== WHY BRANDS CHOOSE ========== */
-#why-choose {
-  background: var(--gradient-bg);
-}
+/* ===== WHY BRANDS CHOOSE ===== */
+#why-choose { background: var(--gradient-bg); }
 
 .why-grid {
   display: grid;
@@ -559,45 +596,26 @@ h2 .highlight {
   border-radius: 20px;
   padding: 2.5rem;
   backdrop-filter: blur(10px);
+  animation: animated-border 4s ease-in-out infinite;
+}
+
+@keyframes animated-border {
+  0%, 100% { border-color: rgba(192,57,43,0.2); }
+  50% { border-color: rgba(212,168,35,0.4); }
 }
 
 .reasons-card h3 {
   font-family: 'Playfair Display', serif;
   font-size: 1.3rem;
   margin-bottom: 1.5rem;
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-}
-
-.reasons-card h3::before {
-  content: '✓';
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  background: var(--gradient-red);
-  font-size: 0.8rem;
-  flex-shrink: 0;
+  display: flex; align-items: center; gap: 0.75rem;
 }
 
 .reason-item {
-  display: flex;
-  align-items: flex-start;
-  gap: 0.75rem;
+  display: flex; align-items: flex-start; gap: 0.75rem;
   padding: 0.75rem 0;
   color: var(--gray);
   font-size: 0.95rem;
-}
-
-.reason-item::before {
-  content: '•';
-  color: var(--gold);
-  font-size: 1.5rem;
-  line-height: 1;
-  flex-shrink: 0;
 }
 
 .brand-statement {
@@ -605,16 +623,25 @@ h2 .highlight {
   padding-top: 1.5rem;
   border-top: 1px solid rgba(255,255,255,0.1);
   font-family: 'Playfair Display', serif;
-  font-size: 1.1rem;
-  font-weight: 700;
+  font-size: 1.1rem; font-weight: 700;
   color: var(--gold);
   text-transform: uppercase;
   letter-spacing: 1px;
 }
 
-.trusted-side h2 {
-  text-align: right;
+.brand-statement::after {
+  content: '|';
+  color: var(--gold);
+  margin-left: 2px;
+  animation: cursor-blink 1s step-end infinite;
 }
+
+@keyframes cursor-blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+.trusted-side h2 { text-align: right; }
 
 .brand-logos {
   display: grid;
@@ -633,7 +660,10 @@ h2 .highlight {
   justify-content: center;
   min-height: 80px;
   transition: transform 0.3s, background 0.3s, border-color 0.3s;
+  opacity: 0;
 }
+
+.brand-logo-card.active { animation: spring-in 0.7s forwards; }
 
 .brand-logo-card:hover {
   transform: translateY(-4px);
@@ -649,14 +679,12 @@ h2 .highlight {
   opacity: 0.8;
 }
 
-/* ========== PACKAGE SECTIONS ========== */
-.package-section {
-  background: var(--gradient-bg);
-  position: relative;
-}
+/* ===== PACKAGE SECTIONS ===== */
+.package-section { background: var(--gradient-bg); position: relative; }
 
 .package-header {
   margin-bottom: 3rem;
+  position: relative;
 }
 
 .package-name {
@@ -673,9 +701,7 @@ h2 .highlight {
   max-width: 700px;
 }
 
-.package-added {
-  margin-top: 1.5rem;
-}
+.package-added { margin-top: 1.5rem; }
 
 .package-added-label {
   color: var(--gold);
@@ -692,9 +718,17 @@ h2 .highlight {
   font-size: 0.9rem;
 }
 
-.package-added li::before {
-  content: '• ';
-  color: var(--gold);
+.package-added li {
+  opacity: 0;
+  transform: translateX(-20px);
+}
+
+.package-added li.active {
+  animation: list-item-in 0.5s ease-out forwards;
+}
+
+@keyframes list-item-in {
+  to { transform: translateX(0); opacity: 1; }
 }
 
 .features-grid {
@@ -705,16 +739,16 @@ h2 .highlight {
 }
 
 .feature-badge {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
+  display: flex; align-items: center; gap: 0.75rem;
   padding: 1rem 1.5rem;
   background: linear-gradient(90deg, rgba(192,57,43,0.2) 0%, rgba(192,57,43,0.05) 100%);
   border: 1px solid rgba(192,57,43,0.15);
   border-radius: 50px;
-  font-size: 0.9rem;
-  font-weight: 500;
+  font-size: 0.9rem; font-weight: 500;
   transition: transform 0.3s, background 0.3s, box-shadow 0.3s;
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
 }
 
 .feature-badge:hover {
@@ -723,18 +757,42 @@ h2 .highlight {
   box-shadow: 0 4px 20px rgba(192,57,43,0.2);
 }
 
-.feature-icon {
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  background: var(--gradient-red);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 0.9rem;
-  flex-shrink: 0;
+/* Badge sweep animation */
+.feature-badge::after {
+  content: '';
+  position: absolute;
+  top: 0; left: -100%;
+  width: 60%; height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(212,168,35,0.15), rgba(255,255,255,0.1), rgba(212,168,35,0.15), transparent);
+  transform: skewX(-20deg);
+  pointer-events: none;
+  transition: left 0.6s ease;
 }
 
+.feature-badge.swept::after { left: 200%; }
+
+.feature-icon {
+  width: 36px; height: 36px;
+  border-radius: 50%;
+  background: var(--gradient-red);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.9rem;
+  flex-shrink: 0;
+  transition: transform 0.3s;
+}
+
+.feature-badge:hover .feature-icon {
+  animation: icon-pulse 0.5s ease;
+}
+
+@keyframes icon-pulse {
+  0% { transform: scale(1) rotate(0deg); }
+  30% { transform: scale(1.3) rotate(-8deg); }
+  60% { transform: scale(1.1) rotate(4deg); }
+  100% { transform: scale(1) rotate(0deg); }
+}
+
+/* ===== PRICING ===== */
 .pricing-row {
   display: flex;
   gap: 2rem;
@@ -742,8 +800,7 @@ h2 .highlight {
 }
 
 .price-card {
-  flex: 1;
-  min-width: 200px;
+  flex: 1; min-width: 200px;
   padding: 1.5rem 2rem;
   border-radius: 16px;
   text-align: center;
@@ -754,8 +811,7 @@ h2 .highlight {
 
 .price-card::before {
   content: '';
-  position: absolute;
-  inset: 0;
+  position: absolute; inset: 0;
   border-radius: 16px;
   padding: 1px;
   background: linear-gradient(135deg, rgba(192,57,43,0.5), rgba(212,168,35,0.3));
@@ -773,9 +829,30 @@ h2 .highlight {
   background: linear-gradient(135deg, rgba(192,57,43,0.2), rgba(192,57,43,0.05));
 }
 
+/* Rotating gradient border on featured */
 .price-card.featured::before {
-  background: linear-gradient(135deg, var(--red), var(--gold));
+  background: conic-gradient(from var(--angle, 0deg), var(--red), var(--gold), var(--red));
+  animation: rotate-border 4s linear infinite;
 }
+
+@keyframes rotate-border {
+  to { --angle: 360deg; }
+}
+
+/* Featured glow pulse */
+@keyframes featured-pulse {
+  0%, 100% {
+    box-shadow: 0 0 20px rgba(192,57,43,0.2), 0 0 40px rgba(192,57,43,0.1);
+  }
+  50% {
+    box-shadow: 0 0 35px rgba(192,57,43,0.4), 0 0 70px rgba(212,168,35,0.15);
+  }
+}
+
+.price-card.featured {
+  animation: featured-pulse 3s ease-in-out infinite;
+}
+.price-card.featured:hover { animation-play-state: paused; }
 
 .price-duration {
   font-size: 0.8rem;
@@ -788,8 +865,7 @@ h2 .highlight {
 
 .price-amount {
   font-family: 'Playfair Display', serif;
-  font-size: 2rem;
-  font-weight: 900;
+  font-size: 2rem; font-weight: 900;
   color: var(--gold);
 }
 
@@ -798,7 +874,7 @@ h2 .highlight {
   color: var(--gray);
 }
 
-/* ========== GROWTH PACKAGE EXTRAS ========== */
+/* ===== GROWTH EXTRAS ===== */
 .growth-extras {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -814,21 +890,22 @@ h2 .highlight {
   transition: transform 0.4s;
 }
 
-.extra-card:hover {
-  transform: translateY(-8px);
-}
+.extra-card:hover { transform: translateY(-8px) scale(1.02); }
 
 .extra-card img {
-  width: 100%;
-  height: 100%;
+  width: 100%; height: 100%;
   object-fit: cover;
+  transition: filter 0.4s, transform 0.6s;
+}
+
+.extra-card:hover img {
+  filter: brightness(1.1) saturate(1.2);
+  transform: scale(1.05);
 }
 
 .extra-card-overlay {
   position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
+  bottom: 0; left: 0; right: 0;
   padding: 1.5rem;
   background: linear-gradient(transparent, rgba(10,22,40,0.95));
 }
@@ -850,10 +927,8 @@ h2 .highlight {
   margin-top: 0.5rem;
 }
 
-/* ========== ADDITIONAL SERVICES ========== */
-#additional {
-  background: var(--gradient-bg);
-}
+/* ===== ADDITIONAL SERVICES ===== */
+#additional { background: var(--gradient-bg); }
 
 .additional-grid {
   display: grid;
@@ -869,14 +944,14 @@ h2 .highlight {
 }
 
 .addon-card {
-  display: flex;
-  gap: 1.5rem;
-  align-items: center;
+  display: flex; gap: 1.5rem; align-items: center;
   padding: 1.5rem;
   background: rgba(255,255,255,0.03);
   border: 1px solid rgba(255,255,255,0.06);
   border-radius: 16px;
   transition: transform 0.3s, background 0.3s;
+  position: relative;
+  overflow: hidden;
 }
 
 .addon-card:hover {
@@ -884,81 +959,73 @@ h2 .highlight {
   background: rgba(255,255,255,0.06);
 }
 
+/* Shimmer sweep on hover */
+.addon-card::after {
+  content: '';
+  position: absolute;
+  top: 0; left: -100%;
+  width: 60%; height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.04), rgba(255,255,255,0.08), rgba(255,255,255,0.04), transparent);
+  transform: skewX(-20deg);
+  transition: left 0.5s ease;
+  pointer-events: none;
+}
+.addon-card:hover::after { left: 160%; }
+
 .addon-card img {
-  width: 100px;
-  height: 80px;
+  width: 100px; height: 80px;
   object-fit: cover;
   border-radius: 10px;
   flex-shrink: 0;
+  transition: filter 0.4s;
 }
+.addon-card:hover img { filter: brightness(1.1) saturate(1.2); }
 
 .addon-name {
   font-family: 'Playfair Display', serif;
-  font-size: 1rem;
-  font-weight: 700;
-  margin-bottom: 0.25rem;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-.addon-name::before {
-  content: '⊕';
-  color: var(--gold);
-}
-
-.addon-desc {
-  font-size: 0.8rem;
-  color: var(--gray);
+  font-size: 1rem; font-weight: 700;
   margin-bottom: 0.25rem;
 }
+
+.addon-desc { font-size: 0.8rem; color: var(--gray); margin-bottom: 0.25rem; }
 
 .addon-price {
   font-family: 'Playfair Display', serif;
-  color: var(--gold);
-  font-weight: 700;
-  font-style: italic;
+  color: var(--gold); font-weight: 700; font-style: italic;
 }
 
-.services-side h2 {
-  margin-bottom: 2rem;
-}
+.services-side h2 { margin-bottom: 2rem; }
 
 .service-item {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+  display: flex; justify-content: space-between; align-items: center;
   padding: 1.25rem 1.5rem;
   margin-bottom: 1rem;
   background: linear-gradient(90deg, rgba(192,57,43,0.15), rgba(192,57,43,0.05));
   border: 1px solid rgba(192,57,43,0.1);
+  border-left: 3px solid transparent;
   border-radius: 50px;
-  transition: transform 0.3s, box-shadow 0.3s;
+  transition: transform 0.3s, box-shadow 0.3s, border-left-color 0.3s;
 }
 
 .service-item:hover {
   transform: translateX(5px);
   box-shadow: 0 4px 20px rgba(192,57,43,0.15);
+  border-left-color: var(--gold);
 }
 
 .service-name {
-  font-weight: 600;
-  font-size: 0.9rem;
-  text-transform: uppercase;
-  letter-spacing: 1px;
+  font-weight: 600; font-size: 0.9rem;
+  text-transform: uppercase; letter-spacing: 1px;
 }
 
 .service-price {
   color: var(--gold);
   font-family: 'Playfair Display', serif;
-  font-weight: 700;
-  font-style: italic;
+  font-weight: 700; font-style: italic;
 }
 
-/* ========== CONTACT SECTION ========== */
-#contact {
-  background: var(--gradient-bg);
-}
+/* ===== CONTACT ===== */
+#contact { background: var(--gradient-bg); }
 
 .contact-grid {
   display: grid;
@@ -982,17 +1049,21 @@ h2 .highlight {
 
 .contact-name {
   font-family: 'Playfair Display', serif;
-  font-size: 1.2rem;
-  font-weight: 700;
-  color: var(--gold);
+  font-size: 1.2rem; font-weight: 700;
   margin-bottom: 1rem;
   font-style: italic;
+  background: linear-gradient(90deg, var(--gold) 0%, var(--gold-light) 50%, var(--gold) 100%);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  transition: background-position 0.6s ease;
 }
 
+.contact-card:hover .contact-name { background-position: right center; }
+
 .contact-detail {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
+  display: flex; align-items: center; gap: 0.75rem;
   padding: 0.4rem 0;
   color: var(--gray);
   font-size: 0.9rem;
@@ -1003,6 +1074,19 @@ h2 .highlight {
   font-size: 0.85rem;
   width: 20px;
   text-align: center;
+  display: inline-block;
+  transition: transform 0.3s;
+}
+
+.contact-card:hover .icon {
+  animation: icon-bounce 0.5s ease-out;
+}
+
+@keyframes icon-bounce {
+  0% { transform: scale(1); }
+  30% { transform: scale(1.4); }
+  60% { transform: scale(0.9); }
+  100% { transform: scale(1); }
 }
 
 .contact-website {
@@ -1016,95 +1100,114 @@ h2 .highlight {
   color: var(--gold);
   text-decoration: none;
   font-family: 'Playfair Display', serif;
-  font-size: 1.5rem;
-  font-weight: 700;
-  transition: color 0.3s;
+  font-size: 1.5rem; font-weight: 700;
+  transition: color 0.3s, letter-spacing 0.3s;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 0.75rem;
 }
 
-.contact-website a:hover { color: var(--gold-light); }
-
-/* ========== FLOATING ICONS ========== */
-.floating-icons {
-  position: absolute;
-  top: 0;
-  right: 0;
-  width: 50%;
-  height: 100%;
-  pointer-events: none;
-  overflow: hidden;
+.contact-website a:hover {
+  color: var(--gold-light);
+  letter-spacing: 2px;
 }
 
-.float-icon {
-  position: absolute;
-  width: 48px;
-  height: 48px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1.2rem;
-  background: rgba(255,255,255,0.08);
-  backdrop-filter: blur(5px);
-  border: 1px solid rgba(255,255,255,0.1);
-  animation: float 6s ease-in-out infinite;
-}
-
-@keyframes float {
-  0%, 100% { transform: translateY(0) rotate(0deg); }
-  50% { transform: translateY(-20px) rotate(5deg); }
-}
-
-/* ========== DIVIDER ========== */
+/* ===== SECTION DIVIDER ===== */
 .section-divider {
   height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(192,57,43,0.3), var(--gold-light), rgba(192,57,43,0.3), transparent);
+  background: linear-gradient(90deg, transparent 0%, transparent 20%, rgba(192,57,43,0.3) 35%, var(--gold-light) 50%, rgba(192,57,43,0.3) 65%, transparent 80%, transparent 100%);
+  background-size: 200% 100%;
   margin: 0 4rem;
+  animation: divider-sweep 4s linear infinite;
 }
 
-/* ========== CTA BUTTON ========== */
-.cta-button {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.75rem;
-  padding: 1rem 2.5rem;
-  background: var(--gradient-red);
-  border: none;
-  border-radius: 50px;
-  color: white;
-  font-size: 1rem;
-  font-weight: 600;
-  text-decoration: none;
-  cursor: pointer;
-  transition: transform 0.3s, box-shadow 0.3s;
-  margin-top: 2rem;
+@keyframes divider-sweep {
+  0% { background-position: -200% center; }
+  100% { background-position: 200% center; }
 }
 
-.cta-button:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 12px 35px rgba(192,57,43,0.4);
+/* ===== SVG ANIMATIONS ===== */
+
+/* Seedling SVG */
+.seedling-svg {
+  position: absolute;
+  top: 0; right: 0;
+  width: 140px; height: 180px;
+  pointer-events: none;
+  opacity: 0.7;
 }
 
-/* ========== COUNTER ANIMATION ========== */
-.counter {
-  font-family: 'Playfair Display', serif;
-  font-size: 3rem;
-  font-weight: 900;
-  color: var(--gold);
+.seedling-svg .stem {
+  stroke-dasharray: 120;
+  stroke-dashoffset: 120;
+  transition: stroke-dashoffset 1.2s cubic-bezier(0.16, 1, 0.3, 1) 0.3s;
 }
 
-/* ========== RESPONSIVE ========== */
+.seedling-svg .leaf {
+  transform-origin: 70px 100px;
+  transform: scale(0);
+  transition: transform 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) 1s;
+}
+
+.seedling-svg.active .stem { stroke-dashoffset: 0; }
+.seedling-svg.active .leaf { transform: scale(1); }
+
+/* Growth chart SVG */
+.chart-svg {
+  position: absolute;
+  top: 0; right: 0;
+  width: 180px; height: 140px;
+  pointer-events: none;
+  opacity: 0.7;
+}
+
+.chart-bar {
+  transform-origin: bottom;
+  transform: scaleY(0);
+  transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.chart-bar:nth-child(1) { transition-delay: 0.1s; }
+.chart-bar:nth-child(2) { transition-delay: 0.25s; }
+.chart-bar:nth-child(3) { transition-delay: 0.4s; }
+.chart-bar:nth-child(4) { transition-delay: 0.55s; }
+.chart-bar:nth-child(5) { transition-delay: 0.7s; }
+
+.chart-trend {
+  stroke-dasharray: 300;
+  stroke-dashoffset: 300;
+  transition: stroke-dashoffset 1.5s cubic-bezier(0.16, 1, 0.3, 1) 0.8s;
+}
+
+.chart-svg.active .chart-bar { transform: scaleY(1); }
+.chart-svg.active .chart-trend { stroke-dashoffset: 0; }
+
+/* ===== SHIMMER TEXT ===== */
+.shimmer-text {
+  background: linear-gradient(90deg, var(--gold) 0%, var(--gold-light) 40%, #fff 50%, var(--gold-light) 60%, var(--gold) 100%);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: shimmer-pan 3s linear infinite;
+}
+
+@keyframes shimmer-pan {
+  0% { background-position: 0% center; }
+  100% { background-position: 200% center; }
+}
+
+/* ===== RESPONSIVE ===== */
 @media (max-width: 1024px) {
   section { padding: 4rem 2rem; }
   .what-is-grid, .why-grid, .additional-grid { grid-template-columns: 1fr; gap: 2rem; }
   .steps-grid { grid-template-columns: repeat(2, 1fr); }
-  .steps-grid::before { display: none; }
+  .steps-connector { display: none; }
   .trusted-side h2 { text-align: left; }
   .growth-extras { grid-template-columns: 1fr; }
   .contact-grid { grid-template-columns: 1fr; }
+  .seedling-svg, .chart-svg { display: none; }
 }
 
 @media (max-width: 768px) {
@@ -1115,6 +1218,15 @@ h2 .highlight {
   .brand-logos { grid-template-columns: repeat(2, 1fr); }
   .nav-links { display: none; }
   nav { padding: 1rem; }
+  .section-divider { margin: 0 1.5rem; }
+}
+
+/* ===== REDUCED MOTION ===== */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
 }
 </style>
 </head>
@@ -1141,9 +1253,11 @@ h2 .highlight {
 <section id="hero">
   <div class="hero-bg-image"></div>
   <div class="hero-particles" id="particles"></div>
+  <div class="blob blob-red" style="top:-100px;right:-150px;opacity:0.04;"></div>
+  <div class="blob blob-gold" style="bottom:-100px;left:20%;opacity:0.03;"></div>
   <div class="section-inner hero-content">
     <div class="hero-year">2026</div>
-    <h1 class="hero-title">SOCIAL <span class="highlight">MEDIA</span></h1>
+    <h1 class="hero-title" id="heroTitle"></h1>
     <div class="hero-subtitle">MANAGEMENT PACKAGES</div>
     <p class="hero-tagline">Your Digital Presence, Done Properly.</p>
     <div class="hero-logos">
@@ -1162,6 +1276,8 @@ h2 .highlight {
 
 <!-- ==================== WHAT IS SM ==================== -->
 <section id="what-is">
+  <div class="blob blob-red"></div>
+  <div class="blob blob-gold"></div>
   <div class="section-inner">
     <div class="what-is-grid">
       <div class="what-is-image reveal-left">
@@ -1174,7 +1290,7 @@ h2 .highlight {
           Social media management is the strategic planning, creation, publishing and optimisation of content across social media platforms to grow your brand, generate leads and build long-term credibility.
         </p>
         <p class="text-emphasis reveal delay-4">
-          At ProAgri Media, we don't just post content — we build structured digital strategies that position your business in front of the right agricultural audience.
+          At ProAgri Media, we don't just post content &mdash; we build structured digital strategies that position your business in front of the right agricultural audience.
         </p>
         <div class="client-tags">
           <div class="client-tag reveal-scale delay-5">NextAfrican Safari</div>
@@ -1191,6 +1307,8 @@ h2 .highlight {
 
 <!-- ==================== HOW IT WORKS ==================== -->
 <section id="how-it-works">
+  <div class="blob blob-red" style="top:-150px;right:-100px;"></div>
+  <div class="blob blob-gold" style="bottom:-100px;left:-150px;"></div>
   <div class="section-inner">
     <div class="section-label reveal">Our Process</div>
     <h2 class="reveal delay-1">How it <span class="highlight">WORKS</span></h2>
@@ -1198,24 +1316,35 @@ h2 .highlight {
       Our structured process ensures your content is strategic, professionally produced, and aligned with your business goals, before it ever goes live.
     </p>
     <div class="steps-grid">
-      <div class="step-card reveal delay-2">
+      <svg class="steps-connector" viewBox="0 0 1100 8" preserveAspectRatio="none">
+        <defs>
+          <linearGradient id="connectorGrad" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0%" stop-color="#c0392b"/>
+            <stop offset="50%" stop-color="#d4a823"/>
+            <stop offset="100%" stop-color="#c0392b"/>
+          </linearGradient>
+        </defs>
+        <line class="connector-line" x1="32" y1="4" x2="1068" y2="4" stroke="url(#connectorGrad)" stroke-width="3" stroke-linecap="round"/>
+      </svg>
+
+      <div class="step-card">
         <div class="step-number">1</div>
-        <h3>Strategy & Focus Session</h3>
+        <h3>Strategy &amp; Focus Session</h3>
         <p>We meet with you to identify your key focus points, goals, target audience and priority products or services. This forms the foundation of your monthly content plan.</p>
       </div>
-      <div class="step-card reveal delay-3">
+      <div class="step-card">
         <div class="step-number">2</div>
         <h3>Content Creation</h3>
         <p>Our editorial and design teams develop professional visuals, written content and platform-specific messaging tailored to your brand and the agricultural market.</p>
       </div>
-      <div class="step-card reveal delay-4">
+      <div class="step-card">
         <div class="step-number">3</div>
-        <h3>Client Review & Approval</h3>
+        <h3>Client Review &amp; Approval</h3>
         <p>All content is shared with you for review. We refine where needed and ensure everything aligns with your expectations before publishing.</p>
       </div>
-      <div class="step-card reveal delay-5">
+      <div class="step-card">
         <div class="step-number">4</div>
-        <h3>Campaign & Scheduling</h3>
+        <h3>Campaign &amp; Scheduling</h3>
         <p>Once approved, our social media team launches structured campaigns, schedules posts strategically and manages ongoing engagement and enquiries.</p>
       </div>
     </div>
@@ -1226,17 +1355,19 @@ h2 .highlight {
 
 <!-- ==================== WHY BRANDS CHOOSE ==================== -->
 <section id="why-choose">
+  <div class="blob blob-red" style="top:-200px;left:-200px;"></div>
+  <div class="blob blob-gold" style="bottom:-100px;right:-150px;"></div>
   <div class="section-inner">
     <div class="why-grid">
       <div>
         <div class="reasons-card reveal-left">
           <h3>Why Brands Choose ProAgri Media</h3>
           <div class="reason-item reveal delay-1">Agricultural industry expertise</div>
-          <div class="reason-item reveal delay-2">Integrated editorial, design & social teams</div>
-          <div class="reason-item reveal delay-3">Structured strategy & measurable reporting</div>
+          <div class="reason-item reveal delay-2">Integrated editorial, design &amp; social teams</div>
+          <div class="reason-item reveal delay-3">Structured strategy &amp; measurable reporting</div>
           <div class="reason-item reveal delay-4">Access to ProAgri's established digital network</div>
           <div class="brand-statement reveal delay-5">
-            We don't just manage pages. We build brands.
+            We don't just manage pages. We build brands
           </div>
         </div>
       </div>
@@ -1244,15 +1375,15 @@ h2 .highlight {
         <div class="section-label reveal-right">Our Portfolio</div>
         <h2 class="reveal-right delay-1">Trusted by <span class="highlight">Leading Brands</span></h2>
         <div class="brand-logos">
-          <div class="brand-logo-card reveal-scale delay-2"><span>NMI</span></div>
-          <div class="brand-logo-card reveal-scale delay-3"><span>RSA Transport</span></div>
-          <div class="brand-logo-card reveal-scale delay-3"><span>Fleets Insurance</span></div>
-          <div class="brand-logo-card reveal-scale delay-4"><span>Mahindra Tractors</span></div>
-          <div class="brand-logo-card reveal-scale delay-5"><span>Drotsky</span></div>
-          <div class="brand-logo-card reveal-scale delay-5"><span>LiuGong Africa</span></div>
-          <div class="brand-logo-card reveal-scale delay-6"><span>AgLeaseCo</span></div>
-          <div class="brand-logo-card reveal-scale delay-6"><span>EasyWean</span></div>
-          <div class="brand-logo-card reveal-scale delay-7"><span>+ More</span></div>
+          <div class="brand-logo-card spring-in"><span>NMI</span></div>
+          <div class="brand-logo-card spring-in"><span>RSA Transport</span></div>
+          <div class="brand-logo-card spring-in"><span>Fleets Insurance</span></div>
+          <div class="brand-logo-card spring-in"><span>Mahindra Tractors</span></div>
+          <div class="brand-logo-card spring-in"><span>Drotsky</span></div>
+          <div class="brand-logo-card spring-in"><span>LiuGong Africa</span></div>
+          <div class="brand-logo-card spring-in"><span>AgLeaseCo</span></div>
+          <div class="brand-logo-card spring-in"><span>EasyWean</span></div>
+          <div class="brand-logo-card spring-in"><span>+ More</span></div>
         </div>
       </div>
     </div>
@@ -1263,8 +1394,19 @@ h2 .highlight {
 
 <!-- ==================== SEEDLING PACKAGE ==================== -->
 <section id="seedling" class="package-section">
+  <div class="blob blob-red" style="top:-100px;right:-250px;"></div>
+  <div class="blob blob-gold" style="bottom:-200px;left:-100px;"></div>
   <div class="section-inner">
     <div class="package-header">
+      <!-- Animated seedling SVG -->
+      <svg class="seedling-svg" viewBox="0 0 140 180" fill="none">
+        <ellipse cx="70" cy="165" rx="30" ry="5" fill="rgba(212,168,35,0.3)"/>
+        <path class="stem" d="M70 160 L70 50" stroke="#d4a823" stroke-width="3" stroke-linecap="round"/>
+        <path class="leaf" d="M70 110 C45 85 15 95 25 120 C35 105 60 105 70 110" fill="#2d6a2d" opacity="0.7"/>
+        <path class="leaf" d="M70 80 C95 55 125 65 115 90 C105 75 80 75 70 80" fill="#3a8a3a" opacity="0.7"/>
+        <path class="leaf" d="M70 55 C50 30 25 40 35 65 C45 50 60 50 70 55" fill="#2d6a2d" opacity="0.5"/>
+      </svg>
+
       <div class="section-label reveal">Entry-Level Package</div>
       <div class="package-name reveal delay-1">SEEDLING <span class="highlight">PACKAGE</span></div>
       <p class="package-description reveal delay-2">
@@ -1282,49 +1424,53 @@ h2 .highlight {
 
     <div class="features-grid">
       <div class="feature-badge reveal delay-1">
-        <div class="feature-icon">📈</div>
-        Lead Generation & Audience Growth
+        <div class="feature-icon">&#128200;</div>
+        Lead Generation &amp; Audience Growth
       </div>
       <div class="feature-badge reveal delay-2">
-        <div class="feature-icon">📱</div>
-        Facebook & Instagram Management
+        <div class="feature-icon">&#128241;</div>
+        Facebook &amp; Instagram Management
       </div>
       <div class="feature-badge reveal delay-2">
-        <div class="feature-icon">📝</div>
+        <div class="feature-icon">&#128221;</div>
         8 Professional Posts per Month
       </div>
       <div class="feature-badge reveal delay-3">
-        <div class="feature-icon">⚙️</div>
-        Account Setup & Page Optimisation
+        <div class="feature-icon">&#9881;</div>
+        Account Setup &amp; Page Optimisation
       </div>
       <div class="feature-badge reveal delay-3">
         <div class="feature-icon">#</div>
-        Strategic Hashtag & Keyword Research
+        Strategic Hashtag &amp; Keyword Research
       </div>
       <div class="feature-badge reveal delay-4">
-        <div class="feature-icon">💬</div>
-        Community & Engagement Management
+        <div class="feature-icon">&#128172;</div>
+        Community &amp; Engagement Management
       </div>
       <div class="feature-badge reveal delay-4">
-        <div class="feature-icon">📊</div>
-        Campaign Management & Reports
+        <div class="feature-icon">&#128202;</div>
+        Campaign Management &amp; Reports
+      </div>
+      <div class="feature-badge reveal delay-5">
+        <div class="feature-icon">&#127910;</div>
+        2 Reels/Stories (supplied footage)
       </div>
     </div>
 
     <div class="pricing-row">
       <div class="price-card reveal delay-2">
         <div class="price-duration">3 Months</div>
-        <div class="price-amount">R9 500</div>
+        <div class="price-amount" data-target="9500" data-prefix="R">R9 500</div>
         <div class="price-period">per month</div>
       </div>
       <div class="price-card featured reveal delay-3">
         <div class="price-duration">6 Months</div>
-        <div class="price-amount">R8 500</div>
+        <div class="price-amount" data-target="8500" data-prefix="R">R8 500</div>
         <div class="price-period">per month</div>
       </div>
       <div class="price-card reveal delay-4">
         <div class="price-duration">12 Months</div>
-        <div class="price-amount">R7 500</div>
+        <div class="price-amount" data-target="7500" data-prefix="R">R7 500</div>
         <div class="price-period">per month</div>
       </div>
     </div>
@@ -1335,8 +1481,27 @@ h2 .highlight {
 
 <!-- ==================== GROWTH PACKAGE ==================== -->
 <section id="growth" class="package-section">
+  <div class="blob blob-gold" style="top:-150px;right:-200px;opacity:0.08;"></div>
+  <div class="blob blob-red" style="bottom:-200px;left:-150px;"></div>
   <div class="section-inner">
     <div class="package-header">
+      <!-- Animated growth chart SVG -->
+      <svg class="chart-svg" viewBox="0 0 180 140" fill="none">
+        <defs>
+          <linearGradient id="barGrad" x1="0" y1="1" x2="0" y2="0">
+            <stop offset="0%" stop-color="#c0392b"/>
+            <stop offset="100%" stop-color="#d4a823"/>
+          </linearGradient>
+        </defs>
+        <rect class="chart-bar" x="10" y="80" width="22" height="50" rx="3" fill="url(#barGrad)"/>
+        <rect class="chart-bar" x="42" y="50" width="22" height="80" rx="3" fill="url(#barGrad)"/>
+        <rect class="chart-bar" x="74" y="60" width="22" height="70" rx="3" fill="url(#barGrad)"/>
+        <rect class="chart-bar" x="106" y="25" width="22" height="105" rx="3" fill="url(#barGrad)"/>
+        <rect class="chart-bar" x="138" y="10" width="22" height="120" rx="3" fill="url(#barGrad)"/>
+        <path class="chart-trend" d="M20 78 C50 65 80 55 118 22 L150 8" stroke="#d4a823" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+        <line x1="5" y1="132" x2="175" y2="132" stroke="rgba(255,255,255,0.2)" stroke-width="1"/>
+      </svg>
+
       <div class="section-label reveal">Premium Package</div>
       <div class="package-name reveal delay-1">GROWTH <span class="highlight">PACKAGE</span></div>
       <p class="package-description reveal delay-2">
@@ -1346,35 +1511,35 @@ h2 .highlight {
 
     <div class="features-grid">
       <div class="feature-badge reveal delay-1">
-        <div class="feature-icon">📈</div>
+        <div class="feature-icon">&#128200;</div>
         Lead generation and follower growth
       </div>
       <div class="feature-badge reveal delay-1">
-        <div class="feature-icon">📱</div>
+        <div class="feature-icon">&#128241;</div>
         Facebook and Instagram management
       </div>
       <div class="feature-badge reveal delay-2">
-        <div class="feature-icon">💼</div>
+        <div class="feature-icon">&#128188;</div>
         LinkedIn management
       </div>
       <div class="feature-badge reveal delay-2">
-        <div class="feature-icon">🎨</div>
+        <div class="feature-icon">&#127912;</div>
         12 designed posts per month
       </div>
       <div class="feature-badge reveal delay-3">
-        <div class="feature-icon">🎬</div>
+        <div class="feature-icon">&#127916;</div>
         2 reels/stories using supplied footage
       </div>
       <div class="feature-badge reveal delay-3">
-        <div class="feature-icon">⚙️</div>
+        <div class="feature-icon">&#9881;</div>
         Account setup and page optimisation
       </div>
       <div class="feature-badge reveal delay-4">
         <div class="feature-icon">#</div>
-        Strategic keyword & hashtag research
+        Strategic keyword &amp; hashtag research
       </div>
       <div class="feature-badge reveal delay-4">
-        <div class="feature-icon">💬</div>
+        <div class="feature-icon">&#128172;</div>
         Community Engagement
       </div>
     </div>
@@ -1395,7 +1560,7 @@ h2 .highlight {
         </div>
       </div>
       <div class="extra-card reveal-scale delay-4">
-        <img src="assets/page7_img4.jpeg" alt="Analytics">
+        <img src="assets/page7_img4.jpeg" alt="Monthly Analytics">
         <div class="extra-card-overlay">
           <div class="extra-card-title">Monthly analytical reports</div>
           <div class="extra-card-desc">Monthly performance report highlighting growth and engagement.</div>
@@ -1406,17 +1571,17 @@ h2 .highlight {
     <div class="pricing-row">
       <div class="price-card reveal delay-2">
         <div class="price-duration">3 Months</div>
-        <div class="price-amount">R14 500</div>
+        <div class="price-amount" data-target="14500" data-prefix="R">R14 500</div>
         <div class="price-period">per month</div>
       </div>
       <div class="price-card featured reveal delay-3">
         <div class="price-duration">6 Months</div>
-        <div class="price-amount">R12 500</div>
+        <div class="price-amount" data-target="12500" data-prefix="R">R12 500</div>
         <div class="price-period">per month</div>
       </div>
       <div class="price-card reveal delay-4">
         <div class="price-duration">12 Months</div>
-        <div class="price-amount">R11 000</div>
+        <div class="price-amount" data-target="11000" data-prefix="R">R11 000</div>
         <div class="price-period">per month</div>
       </div>
     </div>
@@ -1427,6 +1592,7 @@ h2 .highlight {
 
 <!-- ==================== ADDITIONAL SERVICES ==================== -->
 <section id="additional">
+  <div class="blob blob-red" style="top:-100px;left:-200px;opacity:0.04;"></div>
   <div class="section-inner">
     <div class="section-label reveal">Customise Your Package</div>
     <h2 class="reveal delay-1">Additional <span class="highlight">Services</span></h2>
@@ -1482,48 +1648,50 @@ h2 .highlight {
 
 <!-- ==================== CONTACT ==================== -->
 <section id="contact">
+  <div class="blob blob-gold" style="top:-100px;right:-100px;"></div>
+  <div class="blob blob-red" style="bottom:-150px;left:-100px;"></div>
   <div class="section-inner">
     <div style="text-align: center;">
       <div class="section-label reveal">Get In Touch</div>
-      <h2 class="reveal delay-1">Let's <span class="highlight">Connect</span></h2>
+      <h2 class="reveal delay-1">Let's <span class="highlight shimmer-text">Connect</span></h2>
     </div>
 
     <div class="contact-grid">
       <div class="contact-card reveal delay-1">
         <div class="contact-name">Quintus Grobler</div>
-        <div class="contact-detail"><span class="icon">📞</span> +27 (0)83 302 0384</div>
-        <div class="contact-detail"><span class="icon">✉</span> quintus@proagri.co.za</div>
+        <div class="contact-detail"><span class="icon">&#128222;</span> +27 (0)83 302 0384</div>
+        <div class="contact-detail"><span class="icon">&#9993;</span> quintus@proagri.co.za</div>
       </div>
       <div class="contact-card reveal delay-2">
         <div class="contact-name">Beth Foster</div>
-        <div class="contact-detail"><span class="icon">📞</span> +27 (0)84 994 0123</div>
-        <div class="contact-detail"><span class="icon">✉</span> beth@proagri.co.za</div>
+        <div class="contact-detail"><span class="icon">&#128222;</span> +27 (0)84 994 0123</div>
+        <div class="contact-detail"><span class="icon">&#9993;</span> beth@proagri.co.za</div>
       </div>
       <div class="contact-card reveal delay-3">
         <div class="contact-name">Tiny Smith</div>
-        <div class="contact-detail"><span class="icon">📞</span> +27 (0)82 698 3353</div>
-        <div class="contact-detail"><span class="icon">✉</span> tiny@proagri.co.za</div>
+        <div class="contact-detail"><span class="icon">&#128222;</span> +27 (0)82 698 3353</div>
+        <div class="contact-detail"><span class="icon">&#9993;</span> tiny@proagri.co.za</div>
       </div>
       <div class="contact-card reveal delay-4">
         <div class="contact-name">Kevin Greeff</div>
-        <div class="contact-detail"><span class="icon">📞</span> +27 (0)78 374 8597</div>
-        <div class="contact-detail"><span class="icon">✉</span> kevin@proagri.co.za</div>
+        <div class="contact-detail"><span class="icon">&#128222;</span> +27 (0)78 374 8597</div>
+        <div class="contact-detail"><span class="icon">&#9993;</span> kevin@proagri.co.za</div>
       </div>
       <div class="contact-card reveal delay-5">
         <div class="contact-name">Nikita Scriven</div>
-        <div class="contact-detail"><span class="icon">📞</span> +27 (0)84 233 0123</div>
-        <div class="contact-detail"><span class="icon">✉</span> nikita@proagri.co.za</div>
+        <div class="contact-detail"><span class="icon">&#128222;</span> +27 (0)84 233 0123</div>
+        <div class="contact-detail"><span class="icon">&#9993;</span> nikita@proagri.co.za</div>
       </div>
       <div class="contact-card reveal delay-6">
         <div class="contact-name">Zainab Pandor</div>
-        <div class="contact-detail"><span class="icon">📞</span> +260 977 699 786</div>
-        <div class="contact-detail"><span class="icon">✉</span> zainab@proagri.co.za</div>
+        <div class="contact-detail"><span class="icon">&#128222;</span> +260 977 699 786</div>
+        <div class="contact-detail"><span class="icon">&#9993;</span> zainab@proagri.co.za</div>
       </div>
     </div>
 
     <div class="contact-website reveal delay-5">
       <a href="https://www.proagrimedia.com" target="_blank">
-        🌐 www.proagrimedia.com
+        &#127760; www.proagrimedia.com
       </a>
     </div>
   </div>
@@ -1535,51 +1703,92 @@ h2 .highlight {
 </footer>
 
 <script>
-// ========== SCROLL PROGRESS ==========
-var progressBar = document.getElementById('scrollProgress');
+// ===== REGISTER GSAP =====
+gsap.registerPlugin(ScrollTrigger);
 
+// ===== SCROLL PROGRESS =====
+var progressBar = document.getElementById('scrollProgress');
 window.addEventListener('scroll', function() {
   var scrollTop = window.scrollY;
   var docHeight = document.documentElement.scrollHeight - window.innerHeight;
-  var scrollPercent = (scrollTop / docHeight) * 100;
-  progressBar.style.width = scrollPercent + '%';
+  progressBar.style.width = (scrollTop / docHeight) * 100 + '%';
 });
 
-// ========== NAV SHOW/HIDE ==========
+// ===== NAV SHOW/HIDE + ACTIVE SECTION =====
 var nav = document.getElementById('mainNav');
-var lastScroll = 0;
-
 window.addEventListener('scroll', function() {
-  var currentScroll = window.scrollY;
-  if (currentScroll > 300) {
+  if (window.scrollY > 300) {
     nav.classList.add('visible');
   } else {
     nav.classList.remove('visible');
   }
-  lastScroll = currentScroll;
 });
 
-// ========== INTERSECTION OBSERVER FOR REVEALS ==========
-var observerOptions = {
-  root: null,
-  rootMargin: '50px 0px -20px 0px',
-  threshold: 0.05
-};
+// Active section tracking
+var sections = document.querySelectorAll('section[id]');
+var navLinks = document.querySelectorAll('.nav-links a');
 
-var observer = new IntersectionObserver(function(entries) {
+var sectionObserver = new IntersectionObserver(function(entries) {
+  entries.forEach(function(entry) {
+    if (entry.isIntersecting) {
+      navLinks.forEach(function(link) { link.classList.remove('active-section'); });
+      var activeLink = document.querySelector('.nav-links a[href="#' + entry.target.id + '"]');
+      if (activeLink) activeLink.classList.add('active-section');
+    }
+  });
+}, { threshold: 0.3 });
+
+sections.forEach(function(section) { sectionObserver.observe(section); });
+
+// ===== INTERSECTION OBSERVER FOR REVEALS =====
+var revealObserver = new IntersectionObserver(function(entries) {
   entries.forEach(function(entry) {
     if (entry.isIntersecting) {
       entry.target.classList.add('active');
     }
   });
-}, observerOptions);
+}, { rootMargin: '50px 0px -20px 0px', threshold: 0.05 });
 
-// Observe all reveal elements
-document.querySelectorAll('.reveal, .reveal-left, .reveal-right, .reveal-scale').forEach(function(el) {
-  observer.observe(el);
+document.querySelectorAll('.reveal, .reveal-left, .reveal-right, .reveal-scale, .spring-in, .seedling-svg, .chart-svg, .steps-connector').forEach(function(el) {
+  revealObserver.observe(el);
 });
 
-// ========== PARTICLES ==========
+// ===== HERO CHAR-BY-CHAR ANIMATION =====
+(function() {
+  var heroTitle = document.getElementById('heroTitle');
+  var words = [
+    { text: 'SOCIAL ', highlight: false },
+    { text: 'MEDIA', highlight: true }
+  ];
+  var charIndex = 0;
+
+  words.forEach(function(word) {
+    var wrapper = null;
+    if (word.highlight) {
+      wrapper = document.createElement('span');
+      wrapper.className = 'highlight';
+    }
+
+    word.text.split('').forEach(function(char) {
+      var span = document.createElement('span');
+      span.className = 'char-reveal';
+      span.style.animationDelay = (0.5 + charIndex * 0.05) + 's';
+      span.textContent = char === ' ' ? '\u00A0' : char;
+      if (wrapper) {
+        wrapper.appendChild(span);
+      } else {
+        heroTitle.appendChild(span);
+      }
+      charIndex++;
+    });
+
+    if (wrapper) {
+      heroTitle.appendChild(wrapper);
+    }
+  });
+})();
+
+// ===== PARTICLES =====
 var particlesContainer = document.getElementById('particles');
 
 function createParticle() {
@@ -1592,42 +1801,26 @@ function createParticle() {
   particle.style.animationDuration = (Math.random() * 8 + 6) + 's';
   particle.style.animationDelay = (Math.random() * 4) + 's';
 
-  var colors = [
-    'rgba(212, 168, 35, 0.4)',
-    'rgba(192, 57, 43, 0.3)',
-    'rgba(255, 255, 255, 0.15)'
-  ];
+  var colors = ['rgba(212, 168, 35, 0.4)', 'rgba(192, 57, 43, 0.3)', 'rgba(255, 255, 255, 0.15)'];
   particle.style.background = colors[Math.floor(Math.random() * colors.length)];
-
   particlesContainer.appendChild(particle);
-
-  setTimeout(function() {
-    particle.remove();
-  }, 16000);
+  setTimeout(function() { particle.remove(); }, 16000);
 }
 
-// Create initial particles
-for (var i = 0; i < 30; i++) {
-  setTimeout(createParticle, i * 200);
-}
-
-// Continuously create particles
+for (var i = 0; i < 30; i++) { setTimeout(createParticle, i * 200); }
 setInterval(createParticle, 800);
 
-// ========== SMOOTH SCROLL FOR NAV LINKS ==========
+// ===== SMOOTH SCROLL =====
 document.querySelectorAll('a[href^="#"]').forEach(function(anchor) {
   anchor.addEventListener('click', function(e) {
     e.preventDefault();
     var target = document.querySelector(this.getAttribute('href'));
-    if (target) {
-      target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }
+    if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
   });
 });
 
-// ========== PARALLAX ON HERO ==========
+// ===== PARALLAX ON HERO =====
 var heroBg = document.querySelector('.hero-bg-image');
-
 window.addEventListener('scroll', function() {
   var scrolled = window.scrollY;
   if (scrolled < window.innerHeight) {
@@ -1636,22 +1829,204 @@ window.addEventListener('scroll', function() {
   }
 });
 
-// ========== TILT EFFECT ON CARDS ==========
-document.querySelectorAll('.step-card, .price-card, .contact-card, .brand-logo-card').forEach(function(card) {
+// ===== GSAP: STEP NUMBERS SPRING ENTRANCE =====
+document.querySelectorAll('.step-number').forEach(function(el, i) {
+  gsap.fromTo(el,
+    { scale: 0.3, opacity: 0 },
+    {
+      scale: 1, opacity: 1,
+      duration: 0.6,
+      ease: 'back.out(1.7)',
+      scrollTrigger: {
+        trigger: el,
+        start: 'top 85%',
+        once: true
+      },
+      delay: i * 0.15,
+      onComplete: function() {
+        el.classList.add('pulsing');
+      }
+    }
+  );
+});
+
+// ===== GSAP: STEP CARDS STAGGERED =====
+document.querySelectorAll('.step-card').forEach(function(card, i) {
+  gsap.fromTo(card,
+    { y: 50, opacity: 0 },
+    {
+      y: 0, opacity: 1,
+      duration: 0.7,
+      ease: 'power3.out',
+      scrollTrigger: {
+        trigger: card,
+        start: 'top 85%',
+        once: true
+      },
+      delay: i * 0.12
+    }
+  );
+});
+
+// ===== GSAP: COUNTER ANIMATIONS =====
+document.querySelectorAll('.price-amount[data-target]').forEach(function(el) {
+  var target = parseInt(el.getAttribute('data-target'), 10);
+  var prefix = el.getAttribute('data-prefix') || '';
+  var obj = { val: 0 };
+
+  ScrollTrigger.create({
+    trigger: el,
+    start: 'top 85%',
+    once: true,
+    onEnter: function() {
+      gsap.to(obj, {
+        val: target,
+        duration: 1.8,
+        ease: 'power2.out',
+        onUpdate: function() {
+          var v = Math.round(obj.val);
+          var str = v.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+          el.textContent = prefix + str;
+        }
+      });
+    }
+  });
+});
+
+// ===== GSAP: PARALLAX BLOBS =====
+document.querySelectorAll('section').forEach(function(section) {
+  var blobs = section.querySelectorAll('.blob');
+  blobs.forEach(function(blob, i) {
+    gsap.to(blob, {
+      y: (i % 2 === 0) ? -120 : 80,
+      ease: 'none',
+      scrollTrigger: {
+        trigger: section,
+        start: 'top bottom',
+        end: 'bottom top',
+        scrub: 1 + i * 0.5
+      }
+    });
+  });
+});
+
+// ===== GSAP: FEATURE BADGE SWEEP =====
+document.querySelectorAll('.feature-badge').forEach(function(badge, i) {
+  ScrollTrigger.create({
+    trigger: badge,
+    start: 'top 85%',
+    once: true,
+    onEnter: function() {
+      setTimeout(function() {
+        badge.classList.add('swept');
+      }, i * 100);
+    }
+  });
+});
+
+// ===== GSAP: PACKAGE ADDED LIST ITEMS =====
+document.querySelectorAll('.package-added li').forEach(function(li, i) {
+  ScrollTrigger.create({
+    trigger: li,
+    start: 'top 90%',
+    once: true,
+    onEnter: function() {
+      setTimeout(function() {
+        li.classList.add('active');
+      }, i * 150);
+    }
+  });
+});
+
+// ===== GSAP: BRAND LOGO SPRING-IN =====
+document.querySelectorAll('.brand-logo-card').forEach(function(card, i) {
+  ScrollTrigger.create({
+    trigger: card,
+    start: 'top 90%',
+    once: true,
+    onEnter: function() {
+      setTimeout(function() {
+        card.classList.add('active');
+      }, i * 80);
+    }
+  });
+});
+
+// ===== RIPPLE EFFECT ON CLICKABLE ELEMENTS =====
+function addRipple(e) {
+  var el = this;
+  var rect = el.getBoundingClientRect();
+  var ripple = document.createElement('span');
+  ripple.className = 'ripple-effect';
+  var size = Math.max(rect.width, rect.height) * 1.5;
+  ripple.style.width = size + 'px';
+  ripple.style.height = size + 'px';
+  ripple.style.left = (e.clientX - rect.left - size / 2) + 'px';
+  ripple.style.top = (e.clientY - rect.top - size / 2) + 'px';
+  el.appendChild(ripple);
+  setTimeout(function() { ripple.remove(); }, 700);
+}
+
+document.querySelectorAll('.feature-badge, .client-tag').forEach(function(el) {
+  el.addEventListener('click', addRipple);
+});
+
+// ===== MAGNETIC CURSOR ON PRICE CARDS =====
+document.querySelectorAll('.price-card').forEach(function(btn) {
+  btn.addEventListener('mousemove', function(e) {
+    var rect = btn.getBoundingClientRect();
+    var x = e.clientX - rect.left - rect.width / 2;
+    var y = e.clientY - rect.top - rect.height / 2;
+    btn.style.transform = 'translateY(-3px) translate(' + (x * 0.15) + 'px, ' + (y * 0.15) + 'px)';
+    btn.style.transition = 'transform 0.1s linear, box-shadow 0.3s';
+  });
+
+  btn.addEventListener('mouseleave', function() {
+    btn.style.transform = '';
+    btn.style.transition = 'transform 0.5s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s';
+  });
+});
+
+// ===== TILT EFFECT ON CARDS =====
+document.querySelectorAll('.step-card, .contact-card').forEach(function(card) {
   card.addEventListener('mousemove', function(e) {
     var rect = card.getBoundingClientRect();
-    var x = e.clientX - rect.left;
-    var y = e.clientY - rect.top;
-    var centerX = rect.width / 2;
-    var centerY = rect.height / 2;
-    var rotateX = (y - centerY) / 20;
-    var rotateY = (centerX - x) / 20;
-    card.style.transform = 'perspective(1000px) rotateX(' + rotateX + 'deg) rotateY(' + rotateY + 'deg) translateY(-4px)';
+    var x = (e.clientX - rect.left) / rect.width - 0.5;
+    var y = (e.clientY - rect.top) / rect.height - 0.5;
+    card.style.transform = 'perspective(1000px) rotateX(' + (-y * 12) + 'deg) rotateY(' + (x * 12) + 'deg) translateY(-4px)';
   });
 
   card.addEventListener('mouseleave', function() {
     card.style.transform = '';
   });
+});
+
+// ===== GSAP: CONTACT CARDS STAGGER =====
+gsap.from('.contact-card', {
+  y: 60,
+  opacity: 0,
+  duration: 0.6,
+  stagger: 0.1,
+  ease: 'power3.out',
+  scrollTrigger: {
+    trigger: '.contact-grid',
+    start: 'top 80%',
+    once: true
+  }
+});
+
+// ===== GSAP: EXTRA CARDS STAGGER =====
+gsap.from('.extra-card', {
+  scale: 0.8,
+  opacity: 0,
+  duration: 0.7,
+  stagger: 0.15,
+  ease: 'back.out(1.4)',
+  scrollTrigger: {
+    trigger: '.growth-extras',
+    start: 'top 80%',
+    once: true
+  }
 });
 </script>
 
