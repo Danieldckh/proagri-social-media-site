@@ -6,16 +6,10 @@
 <title>ProAgri Media — Social Media Management Packages 2026</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-
-<!-- GSAP + ScrollTrigger -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
 
-<!-- Lottie Player -->
-<script src="https://unpkg.com/@lottiefiles/lottie-player@2.0.8/dist/lottie-player.js"></script>
-
 <style>
-/* ===== @property for animated gradients ===== */
 @property --angle {
   syntax: '<angle>';
   initial-value: 0deg;
@@ -33,409 +27,163 @@
   --gold-light: #f0c848;
   --white: #ffffff;
   --gray: #a0aec0;
-  --gradient-red: linear-gradient(135deg, #c0392b 0%, #e74c3c 50%, #c0392b 100%);
-  --gradient-badge: linear-gradient(90deg, rgba(192,57,43,0.9) 0%, rgba(231,76,60,0.7) 100%);
-  --gradient-bg: linear-gradient(135deg, #0a1628 0%, #12213a 60%, #1a0a0a 100%);
 }
 
-html { scroll-behavior: smooth; overflow-x: hidden; }
+html { overflow: hidden; }
 
 body {
   font-family: 'Inter', sans-serif;
   background: var(--navy);
   color: var(--white);
-  overflow-x: hidden;
+  overflow: hidden;
+  height: 100vh;
   line-height: 1.6;
 }
 
-/* Red accent strip on right */
-body::after {
-  content: '';
-  position: fixed;
-  top: 0; right: 0;
-  width: 6px; height: 100%;
-  background: linear-gradient(180deg, transparent 0%, var(--red) 30%, var(--red-bright) 50%, var(--red) 70%, transparent 100%);
-  z-index: 1000;
-  opacity: 0.7;
-}
-
-/* Scroll progress bar */
-.scroll-progress {
-  position: fixed; top: 0; left: 0;
-  height: 3px;
-  background: var(--gradient-red);
-  z-index: 10000;
-  width: 0%;
-  transition: width 0.1s linear;
-}
-
-/* ===== NAVIGATION ===== */
-nav {
-  position: fixed; top: 0; left: 0; right: 0;
-  z-index: 9999;
-  padding: 1rem 2rem;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  background: rgba(10, 22, 40, 0.85);
-  backdrop-filter: blur(20px);
-  border-bottom: 1px solid rgba(255,255,255,0.05);
-  transform: translateY(-100%);
-  transition: transform 0.4s ease;
-}
-
-nav.visible { transform: translateY(0); }
-
-.nav-logo {
-  font-family: 'Playfair Display', serif;
-  font-size: 1.2rem; font-weight: 700; letter-spacing: 1px;
-}
-.nav-logo span { color: var(--gray); font-weight: 400; }
-
-.nav-links { display: flex; gap: 2rem; list-style: none; }
-
-.nav-links a {
-  color: var(--gray);
-  text-decoration: none;
-  font-size: 0.85rem; font-weight: 500;
-  letter-spacing: 0.5px;
-  transition: color 0.3s;
-  text-transform: uppercase;
-  position: relative;
-}
-
-.nav-links a::after {
-  content: '';
-  position: absolute;
-  bottom: -4px; left: 0;
-  width: 0; height: 1px;
-  background: var(--gold);
-  transition: width 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.nav-links a:hover { color: var(--gold); }
-.nav-links a:hover::after,
-.nav-links a.active-section::after { width: 100%; }
-
-/* ===== SECTIONS ===== */
-section {
-  min-height: 100vh;
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 6rem 4rem;
+/* ===== HORIZONTAL SCROLL ARCHITECTURE ===== */
+.h-scroll-wrapper {
+  width: 100vw;
+  height: 100vh;
   overflow: hidden;
-}
-
-section::before {
-  content: '';
-  position: absolute;
-  top: 0; right: 0;
-  width: 40%; height: 100%;
-  background: linear-gradient(270deg, rgba(192,57,43,0.08) 0%, transparent 100%);
-  pointer-events: none;
-}
-
-.section-inner {
-  max-width: 1200px;
-  width: 100%;
   position: relative;
-  z-index: 2;
 }
 
-/* ===== MORPHING BLOB BACKGROUNDS ===== */
-.blob {
-  position: absolute;
-  border-radius: 50%;
-  filter: blur(80px);
-  pointer-events: none;
-  z-index: 0;
-  opacity: 0.06;
+.h-scroll-track {
+  display: flex;
+  width: 800vw;
+  height: 100vh;
   will-change: transform;
 }
 
-.blob-red {
-  width: 600px; height: 600px;
-  background: var(--red);
-  top: -200px; right: -200px;
-  animation: blob-drift-1 20s ease-in-out infinite;
-}
-
-.blob-gold {
-  width: 400px; height: 400px;
-  background: var(--gold);
-  bottom: -150px; left: -100px;
-  animation: blob-drift-2 25s ease-in-out infinite;
-}
-
-@keyframes blob-drift-1 {
-  0%, 100% { border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%; transform: translate(0, 0) scale(1); }
-  33% { border-radius: 30% 60% 70% 40% / 50% 60% 30% 60%; transform: translate(60px, -40px) scale(1.1); }
-  66% { border-radius: 50% 60% 20% 80% / 40% 70% 60% 30%; transform: translate(-30px, 30px) scale(0.9); }
-}
-
-@keyframes blob-drift-2 {
-  0%, 100% { border-radius: 50% 60% 20% 80% / 40% 70% 60% 30%; transform: translate(0, 0) scale(1); }
-  50% { border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%; transform: translate(-80px, 50px) scale(1.15); }
-}
-
-/* ===== REVEAL ANIMATIONS ===== */
-.reveal {
-  opacity: 0; transform: translateY(60px);
-  transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
-}
-.reveal.active { opacity: 1; transform: translateY(0); }
-
-.reveal-left {
-  opacity: 0; transform: translateX(-80px);
-  transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
-}
-.reveal-left.active { opacity: 1; transform: translateX(0); }
-
-.reveal-right {
-  opacity: 0; transform: translateX(80px);
-  transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
-}
-.reveal-right.active { opacity: 1; transform: translateX(0); }
-
-.reveal-scale {
-  opacity: 0; transform: scale(0.85);
-  transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
-}
-.reveal-scale.active { opacity: 1; transform: scale(1); }
-
-/* Spring entrance for cards */
-@keyframes spring-in {
-  0% { opacity: 0; transform: scale(0.7) translateY(30px); }
-  60% { opacity: 1; transform: scale(1.05) translateY(-5px); }
-  80% { transform: scale(0.98) translateY(2px); }
-  100% { transform: scale(1) translateY(0); }
-}
-
-.spring-in.active { animation: spring-in 0.7s forwards; }
-
-/* Stagger delays */
-.delay-1 { transition-delay: 0.1s; }
-.delay-2 { transition-delay: 0.2s; }
-.delay-3 { transition-delay: 0.3s; }
-.delay-4 { transition-delay: 0.4s; }
-.delay-5 { transition-delay: 0.5s; }
-.delay-6 { transition-delay: 0.6s; }
-.delay-7 { transition-delay: 0.7s; }
-.delay-8 { transition-delay: 0.8s; }
-
-/* ===== HERO SECTION ===== */
-#hero {
-  min-height: 100vh;
-  background: var(--gradient-bg);
+.slide {
+  width: 100vw;
+  height: 100vh;
+  flex-shrink: 0;
   position: relative;
   overflow: hidden;
-}
-
-.hero-bg-image {
-  position: absolute;
-  top: 0; left: 0;
-  width: 100%; height: 100%;
-  background: url('assets/page1_img1.jpeg') center/cover no-repeat;
-  opacity: 0.15;
-  filter: blur(2px);
-}
-
-.hero-particles {
-  position: absolute;
-  top: 0; left: 0;
-  width: 100%; height: 100%;
-  overflow: hidden;
-}
-
-.particle {
-  position: absolute;
-  border-radius: 50%;
-  animation: float-particle linear infinite;
-}
-
-@keyframes float-particle {
-  0% { transform: translateY(100vh) scale(0); opacity: 0; }
-  10% { opacity: 1; }
-  90% { opacity: 1; }
-  100% { transform: translateY(-10vh) scale(1); opacity: 0; }
-}
-
-.hero-content {
-  position: relative;
-  z-index: 3;
-  text-align: left;
-}
-
-.hero-year {
-  display: inline-block;
-  padding: 0.4rem 1.2rem;
-  border: 1px solid var(--gold);
-  color: var(--gold);
-  font-size: 0.9rem; font-weight: 600;
-  letter-spacing: 3px;
-  margin-bottom: 2rem;
-  clip-path: inset(0 100% 0 0);
-  animation: clip-reveal 0.8s 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-}
-
-@keyframes clip-reveal {
-  to { clip-path: inset(0 0% 0 0); }
-}
-
-.hero-title {
-  font-family: 'Playfair Display', serif;
-  font-size: clamp(3rem, 8vw, 6.5rem);
-  font-weight: 900;
-  line-height: 1;
-  margin-bottom: 0.5rem;
-}
-
-.hero-title .char-reveal {
-  display: inline-block;
-  opacity: 0;
-  transform: translateY(1.2em) rotate(8deg);
-  animation: char-in 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-}
-
-@keyframes char-in {
-  to { opacity: 1; transform: translateY(0) rotate(0deg); }
-}
-
-.hero-title .highlight {
-  background: var(--gradient-red);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-
-.hero-subtitle {
-  font-family: 'Playfair Display', serif;
-  font-size: clamp(1.5rem, 4vw, 3rem);
-  font-weight: 700;
-  color: var(--gray);
-  margin-bottom: 2rem;
-  opacity: 0;
-  animation: fadeInUp 1s 0.9s forwards;
-}
-
-.hero-tagline {
-  font-size: 1.1rem;
-  color: var(--gray);
-  font-weight: 300;
-  font-style: italic;
-  opacity: 0;
-  animation: fadeInUp 1s 1.1s forwards;
-}
-
-.hero-logos {
-  display: flex; gap: 1.5rem;
-  margin-top: 3rem;
-  align-items: center;
-  opacity: 0;
-  animation: fadeInUp 1s 1.3s forwards;
-}
-
-.hero-logos img {
-  height: 35px;
-  filter: brightness(0) invert(1);
-  opacity: 0.7;
-  transition: opacity 0.3s, transform 0.3s;
-}
-.hero-logos img:hover { opacity: 1; transform: scale(1.1); }
-
-.scroll-indicator {
-  position: absolute;
-  bottom: 2rem; left: 50%;
-  transform: translateX(-50%);
+  background: linear-gradient(135deg, var(--navy) 0%, var(--navy-light) 60%, #1a0a0a 100%);
   display: flex;
-  flex-direction: column;
   align-items: center;
-  gap: 0.5rem;
-  opacity: 0;
-  animation: fadeIn 1s 1.8s forwards;
+  justify-content: center;
 }
 
-.scroll-indicator span {
-  font-size: 0.7rem;
+/* ===== TOP NAV ===== */
+nav {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 9999;
+  padding: 0.9rem 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: rgba(10,22,40,0.85);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+
+.nav-logo {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.1rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+}
+.nav-logo span { color: var(--gray); font-weight: 400; }
+
+.nav-slide-label {
+  font-size: 0.75rem;
   text-transform: uppercase;
   letter-spacing: 3px;
   color: var(--gray);
 }
 
-.scroll-arrow {
-  width: 24px; height: 24px;
-  border-right: 2px solid var(--gold);
-  border-bottom: 2px solid var(--gold);
-  transform: rotate(45deg);
-  animation: bounce 2s infinite;
+/* ===== SLIDE DOTS ===== */
+.slide-dots {
+  position: fixed;
+  bottom: 2rem;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 0.75rem;
+  z-index: 9998;
 }
 
-@keyframes bounce {
-  0%, 100% { transform: rotate(45deg) translateY(0); }
-  50% { transform: rotate(45deg) translateY(8px); }
+.slide-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.25);
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  transition: background 0.3s, transform 0.3s, width 0.3s;
 }
 
-@keyframes fadeInUp {
-  from { opacity: 0; transform: translateY(40px); }
-  to { opacity: 1; transform: translateY(0); }
+.slide-dot.active {
+  background: var(--gold);
+  width: 24px;
+  border-radius: 4px;
+  transform: none;
 }
 
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
+/* ===== ARROW NAVIGATION ===== */
+.nav-arrow {
+  position: fixed;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 9998;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: rgba(212,168,35,0.15);
+  border: 1px solid rgba(212,168,35,0.35);
+  color: var(--gold);
+  font-size: 1.2rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.3s, transform 0.3s;
+  backdrop-filter: blur(8px);
 }
 
-/* ===== WHAT IS SM ===== */
-#what-is { background: var(--gradient-bg); }
+.nav-arrow:hover { background: rgba(212,168,35,0.3); transform: translateY(-50%) scale(1.1); }
+.nav-arrow.prev { left: 1.5rem; }
+.nav-arrow.next { right: 1.5rem; }
+.nav-arrow:disabled { opacity: 0.2; pointer-events: none; }
 
-.what-is-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 4rem;
+/* ===== SLIDE CONTENT LAYOUT ===== */
+.slide-inner {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  max-width: 1300px;
+  padding: 0 5rem;
+  padding-top: 5rem;
+  height: 100%;
+  display: flex;
   align-items: center;
 }
 
-.what-is-image {
-  position: relative;
-  border-radius: 16px;
-  overflow: hidden;
-  box-shadow: 0 25px 60px rgba(0,0,0,0.5);
-}
-
-.what-is-image img {
-  width: 100%; display: block;
-  transition: transform 0.6s ease;
-}
-.what-is-image:hover img { transform: scale(1.05); }
-
-.what-is-image::after {
-  content: '';
-  position: absolute; inset: 0;
-  background: linear-gradient(135deg, rgba(192,57,43,0.2), transparent);
-  pointer-events: none;
-}
-
+/* ===== SECTION LABEL / HEADINGS ===== */
 .section-label {
-  font-size: 0.8rem;
+  font-size: 0.75rem;
   text-transform: uppercase;
   letter-spacing: 4px;
   color: var(--gold);
-  margin-bottom: 1rem;
+  margin-bottom: 0.75rem;
   font-weight: 600;
 }
 
 h2 {
   font-family: 'Playfair Display', serif;
-  font-size: clamp(2rem, 4vw, 3.5rem);
+  font-size: clamp(1.8rem, 3.5vw, 3rem);
   font-weight: 900;
   line-height: 1.1;
-  margin-bottom: 1.5rem;
+  margin-bottom: 1.25rem;
 }
 
-h2 .highlight {
-  background: var(--gradient-red);
+h2 .hl, .hl {
+  background: linear-gradient(135deg, #c0392b 0%, #e74c3c 50%, #c0392b 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -443,745 +191,30 @@ h2 .highlight {
 
 .text-body {
   color: var(--gray);
-  font-size: 1rem;
+  font-size: 0.95rem;
   line-height: 1.8;
-  margin-bottom: 1.5rem;
+  margin-bottom: 1.25rem;
 }
 
-.text-emphasis {
+.text-em {
   color: var(--white);
   font-weight: 500;
   border-left: 3px solid var(--red);
   padding-left: 1rem;
   margin-top: 1rem;
-}
-
-.client-tags {
-  display: flex; flex-wrap: wrap; gap: 0.75rem;
-  margin-top: 2rem;
-}
-
-.client-tag {
-  display: flex; align-items: center; gap: 0.5rem;
-  padding: 0.6rem 1.2rem;
-  background: var(--gradient-badge);
-  border-radius: 50px;
-  font-size: 0.85rem; font-weight: 500;
-  box-shadow: 0 4px 15px rgba(192,57,43,0.3);
-  transition: transform 0.3s, box-shadow 0.3s;
-  cursor: pointer;
-  position: relative;
-  overflow: hidden;
-}
-
-.client-tag:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(192,57,43,0.4);
-}
-
-/* Ripple effect */
-.ripple-effect {
-  position: absolute;
-  border-radius: 50%;
-  background: rgba(212, 168, 35, 0.3);
-  transform: scale(0);
-  animation: ripple-expand 0.7s ease-out forwards;
-  pointer-events: none;
-}
-
-@keyframes ripple-expand {
-  to { transform: scale(1); opacity: 0; }
-}
-
-/* ===== HOW IT WORKS ===== */
-#how-it-works { background: var(--gradient-bg); }
-
-.steps-intro {
-  color: var(--gray);
-  font-size: 1rem;
-  max-width: 700px;
-  margin-bottom: 3rem;
-  line-height: 1.8;
-}
-
-.steps-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 2rem;
-  position: relative;
-  margin-top: 3rem;
-}
-
-/* Animated SVG connector */
-.steps-connector {
-  position: absolute;
-  top: 32px; left: 32px; right: 32px;
-  height: 8px;
-  z-index: 0;
-}
-
-.connector-line {
-  stroke-dasharray: 1100;
-  stroke-dashoffset: 1100;
-  transition: stroke-dashoffset 2s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.steps-connector.active .connector-line {
-  stroke-dashoffset: 0;
-}
-
-.step-card {
-  position: relative;
-  z-index: 1;
-  text-align: center;
-}
-
-.step-number {
-  width: 64px; height: 64px;
-  border-radius: 50%;
-  background: var(--gradient-red);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-family: 'Playfair Display', serif;
-  font-size: 1.5rem; font-weight: 900;
-  margin: 0 auto 1.5rem;
-  box-shadow: 0 8px 30px rgba(192,57,43,0.4);
-  transition: transform 0.3s, box-shadow 0.3s;
-  position: relative;
-}
-
-/* Pulse ring on step numbers */
-@keyframes pulse-ring {
-  0% { box-shadow: 0 0 0 0 rgba(192, 57, 43, 0.4); }
-  70% { box-shadow: 0 0 0 20px rgba(192, 57, 43, 0); }
-  100% { box-shadow: 0 0 0 0 rgba(192, 57, 43, 0); }
-}
-
-.step-number.pulsing {
-  animation: pulse-ring 2.5s ease-out infinite;
-}
-
-.step-card:hover .step-number {
-  transform: scale(1.15);
-  box-shadow: 0 12px 40px rgba(192,57,43,0.5);
-}
-
-.step-card h3 {
-  font-family: 'Playfair Display', serif;
-  font-size: 1.2rem; font-weight: 700;
-  margin-bottom: 0.75rem;
-  font-style: italic;
-}
-
-.step-card p {
-  color: var(--gray);
-  font-size: 0.85rem;
+  font-size: 0.95rem;
   line-height: 1.7;
 }
 
-/* ===== WHY BRANDS CHOOSE ===== */
-#why-choose { background: var(--gradient-bg); }
-
-.why-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 4rem;
-  align-items: center;
-}
-
-.reasons-card {
-  background: linear-gradient(135deg, rgba(192,57,43,0.15), rgba(192,57,43,0.05));
-  border: 1px solid rgba(192,57,43,0.2);
-  border-radius: 20px;
-  padding: 2.5rem;
-  backdrop-filter: blur(10px);
-  animation: animated-border 4s ease-in-out infinite;
-}
-
-@keyframes animated-border {
-  0%, 100% { border-color: rgba(192,57,43,0.2); }
-  50% { border-color: rgba(212,168,35,0.4); }
-}
-
-.reasons-card h3 {
-  font-family: 'Playfair Display', serif;
-  font-size: 1.3rem;
-  margin-bottom: 1.5rem;
-  display: flex; align-items: center; gap: 0.75rem;
-}
-
-.reason-item {
-  display: flex; align-items: flex-start; gap: 0.75rem;
-  padding: 0.75rem 0;
-  color: var(--gray);
-  font-size: 0.95rem;
-}
-
-.brand-statement {
-  margin-top: 2rem;
-  padding-top: 1.5rem;
-  border-top: 1px solid rgba(255,255,255,0.1);
-  font-family: 'Playfair Display', serif;
-  font-size: 1.1rem; font-weight: 700;
-  color: var(--gold);
-  text-transform: uppercase;
-  letter-spacing: 1px;
-}
-
-.brand-statement::after {
-  content: '|';
-  color: var(--gold);
-  margin-left: 2px;
-  animation: cursor-blink 1s step-end infinite;
-}
-
-@keyframes cursor-blink {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0; }
-}
-
-.trusted-side h2 { text-align: right; }
-
-.brand-logos {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 1.5rem;
-  margin-top: 2rem;
-}
-
-.brand-logo-card {
-  background: rgba(255,255,255,0.05);
-  border: 1px solid rgba(255,255,255,0.08);
-  border-radius: 12px;
-  padding: 1.5rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 80px;
-  transition: transform 0.3s, background 0.3s, border-color 0.3s;
-  opacity: 0;
-}
-
-.brand-logo-card.active { animation: spring-in 0.7s forwards; }
-
-.brand-logo-card:hover {
-  transform: translateY(-4px);
-  background: rgba(255,255,255,0.08);
-  border-color: rgba(192,57,43,0.3);
-}
-
-.brand-logo-card span {
-  font-weight: 700;
-  font-size: 0.85rem;
-  letter-spacing: 1px;
-  text-align: center;
-  opacity: 0.8;
-}
-
-/* ===== PACKAGE SECTIONS ===== */
-.package-section { background: var(--gradient-bg); position: relative; }
-
-.package-header {
-  margin-bottom: 3rem;
-  position: relative;
-}
-
-.package-name {
-  font-family: 'Playfair Display', serif;
-  font-size: clamp(2.5rem, 5vw, 4rem);
-  font-weight: 900;
-  margin-bottom: 1rem;
-}
-
-.package-description {
-  color: var(--gray);
-  font-size: 1rem;
-  line-height: 1.8;
-  max-width: 700px;
-}
-
-.package-added { margin-top: 1.5rem; }
-
-.package-added-label {
-  color: var(--gold);
-  font-weight: 600;
-  font-size: 0.85rem;
-  text-transform: uppercase;
-  letter-spacing: 2px;
-  margin-bottom: 0.5rem;
-}
-
-.package-added ul {
-  list-style: none;
-  color: var(--gray);
-  font-size: 0.9rem;
-}
-
-.package-added li {
-  opacity: 0;
-  transform: translateX(-20px);
-}
-
-.package-added li.active {
-  animation: list-item-in 0.5s ease-out forwards;
-}
-
-@keyframes list-item-in {
-  to { transform: translateX(0); opacity: 1; }
-}
-
-.features-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 1rem;
-  margin-bottom: 3rem;
-}
-
-.feature-badge {
-  display: flex; align-items: center; gap: 0.75rem;
-  padding: 1rem 1.5rem;
-  background: linear-gradient(90deg, rgba(192,57,43,0.2) 0%, rgba(192,57,43,0.05) 100%);
-  border: 1px solid rgba(192,57,43,0.15);
-  border-radius: 50px;
-  font-size: 0.9rem; font-weight: 500;
-  transition: transform 0.3s, background 0.3s, box-shadow 0.3s;
-  position: relative;
-  overflow: hidden;
-  cursor: pointer;
-}
-
-.feature-badge:hover {
-  transform: translateX(8px);
-  background: linear-gradient(90deg, rgba(192,57,43,0.35) 0%, rgba(192,57,43,0.1) 100%);
-  box-shadow: 0 4px 20px rgba(192,57,43,0.2);
-}
-
-/* Badge sweep animation */
-.feature-badge::after {
-  content: '';
+/* ===== BLOB BACKGROUNDS ===== */
+.blob {
   position: absolute;
-  top: 0; left: -100%;
-  width: 60%; height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(212,168,35,0.15), rgba(255,255,255,0.1), rgba(212,168,35,0.15), transparent);
-  transform: skewX(-20deg);
-  pointer-events: none;
-  transition: left 0.6s ease;
-}
-
-.feature-badge.swept::after { left: 200%; }
-
-.feature-icon {
-  width: 36px; height: 36px;
   border-radius: 50%;
-  background: var(--gradient-red);
-  display: flex; align-items: center; justify-content: center;
-  font-size: 0.9rem;
-  flex-shrink: 0;
-  transition: transform 0.3s;
-}
-
-.feature-badge:hover .feature-icon {
-  animation: icon-pulse 0.5s ease;
-}
-
-@keyframes icon-pulse {
-  0% { transform: scale(1) rotate(0deg); }
-  30% { transform: scale(1.3) rotate(-8deg); }
-  60% { transform: scale(1.1) rotate(4deg); }
-  100% { transform: scale(1) rotate(0deg); }
-}
-
-/* ===== PRICING ===== */
-.pricing-row {
-  display: flex;
-  gap: 2rem;
-  flex-wrap: wrap;
-}
-
-.price-card {
-  flex: 1; min-width: 200px;
-  padding: 1.5rem 2rem;
-  border-radius: 16px;
-  text-align: center;
-  transition: transform 0.3s, box-shadow 0.3s;
-  position: relative;
-  overflow: hidden;
-}
-
-.price-card::before {
-  content: '';
-  position: absolute; inset: 0;
-  border-radius: 16px;
-  padding: 1px;
-  background: linear-gradient(135deg, rgba(192,57,43,0.5), rgba(212,168,35,0.3));
-  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-  -webkit-mask-composite: xor;
-  mask-composite: exclude;
-}
-
-.price-card:hover {
-  transform: translateY(-6px);
-  box-shadow: 0 20px 40px rgba(0,0,0,0.3);
-}
-
-.price-card.featured {
-  background: linear-gradient(135deg, rgba(192,57,43,0.2), rgba(192,57,43,0.05));
-}
-
-/* Rotating gradient border on featured */
-.price-card.featured::before {
-  background: conic-gradient(from var(--angle, 0deg), var(--red), var(--gold), var(--red));
-  animation: rotate-border 4s linear infinite;
-}
-
-@keyframes rotate-border {
-  to { --angle: 360deg; }
-}
-
-/* Featured glow pulse */
-@keyframes featured-pulse {
-  0%, 100% {
-    box-shadow: 0 0 20px rgba(192,57,43,0.2), 0 0 40px rgba(192,57,43,0.1);
-  }
-  50% {
-    box-shadow: 0 0 35px rgba(192,57,43,0.4), 0 0 70px rgba(212,168,35,0.15);
-  }
-}
-
-.price-card.featured {
-  animation: featured-pulse 3s ease-in-out infinite;
-}
-.price-card.featured:hover { animation-play-state: paused; }
-
-.price-duration {
-  font-size: 0.8rem;
-  text-transform: uppercase;
-  letter-spacing: 2px;
-  color: var(--gray);
-  margin-bottom: 0.5rem;
-  font-weight: 600;
-}
-
-.price-amount {
-  font-family: 'Playfair Display', serif;
-  font-size: 2rem; font-weight: 900;
-  color: var(--gold);
-}
-
-.price-period {
-  font-size: 0.85rem;
-  color: var(--gray);
-}
-
-/* ===== GROWTH EXTRAS ===== */
-.growth-extras {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 1.5rem;
-  margin: 3rem 0;
-}
-
-.extra-card {
-  border-radius: 16px;
-  overflow: hidden;
-  position: relative;
-  aspect-ratio: 4/3;
-  transition: transform 0.4s;
-}
-
-.extra-card:hover { transform: translateY(-8px) scale(1.02); }
-
-.extra-card img {
-  width: 100%; height: 100%;
-  object-fit: cover;
-  transition: filter 0.4s, transform 0.6s;
-}
-
-.extra-card:hover img {
-  filter: brightness(1.1) saturate(1.2);
-  transform: scale(1.05);
-}
-
-.extra-card-overlay {
-  position: absolute;
-  bottom: 0; left: 0; right: 0;
-  padding: 1.5rem;
-  background: linear-gradient(transparent, rgba(10,22,40,0.95));
-}
-
-.extra-card-title {
-  font-family: 'Playfair Display', serif;
-  font-size: 1.1rem;
-  font-style: italic;
-  margin-bottom: 0.25rem;
-  background: var(--gradient-badge);
-  display: inline-block;
-  padding: 0.3rem 0.8rem;
-  border-radius: 20px;
-}
-
-.extra-card-desc {
-  font-size: 0.8rem;
-  color: var(--gray);
-  margin-top: 0.5rem;
-}
-
-/* ===== ADDITIONAL SERVICES ===== */
-#additional { background: var(--gradient-bg); }
-
-.additional-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 3rem;
-  align-items: start;
-}
-
-.addon-list {
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
-}
-
-.addon-card {
-  display: flex; gap: 1.5rem; align-items: center;
-  padding: 1.5rem;
-  background: rgba(255,255,255,0.03);
-  border: 1px solid rgba(255,255,255,0.06);
-  border-radius: 16px;
-  transition: transform 0.3s, background 0.3s;
-  position: relative;
-  overflow: hidden;
-}
-
-.addon-card:hover {
-  transform: translateX(8px);
-  background: rgba(255,255,255,0.06);
-}
-
-/* Shimmer sweep on hover */
-.addon-card::after {
-  content: '';
-  position: absolute;
-  top: 0; left: -100%;
-  width: 60%; height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.04), rgba(255,255,255,0.08), rgba(255,255,255,0.04), transparent);
-  transform: skewX(-20deg);
-  transition: left 0.5s ease;
+  filter: blur(80px);
   pointer-events: none;
+  z-index: 0;
+  will-change: transform;
 }
-.addon-card:hover::after { left: 160%; }
-
-.addon-card img {
-  width: 100px; height: 80px;
-  object-fit: cover;
-  border-radius: 10px;
-  flex-shrink: 0;
-  transition: filter 0.4s;
-}
-.addon-card:hover img { filter: brightness(1.1) saturate(1.2); }
-
-.addon-name {
-  font-family: 'Playfair Display', serif;
-  font-size: 1rem; font-weight: 700;
-  margin-bottom: 0.25rem;
-}
-
-.addon-desc { font-size: 0.8rem; color: var(--gray); margin-bottom: 0.25rem; }
-
-.addon-price {
-  font-family: 'Playfair Display', serif;
-  color: var(--gold); font-weight: 700; font-style: italic;
-}
-
-.services-side h2 { margin-bottom: 2rem; }
-
-.service-item {
-  display: flex; justify-content: space-between; align-items: center;
-  padding: 1.25rem 1.5rem;
-  margin-bottom: 1rem;
-  background: linear-gradient(90deg, rgba(192,57,43,0.15), rgba(192,57,43,0.05));
-  border: 1px solid rgba(192,57,43,0.1);
-  border-left: 3px solid transparent;
-  border-radius: 50px;
-  transition: transform 0.3s, box-shadow 0.3s, border-left-color 0.3s;
-}
-
-.service-item:hover {
-  transform: translateX(5px);
-  box-shadow: 0 4px 20px rgba(192,57,43,0.15);
-  border-left-color: var(--gold);
-}
-
-.service-name {
-  font-weight: 600; font-size: 0.9rem;
-  text-transform: uppercase; letter-spacing: 1px;
-}
-
-.service-price {
-  color: var(--gold);
-  font-family: 'Playfair Display', serif;
-  font-weight: 700; font-style: italic;
-}
-
-/* ===== CONTACT ===== */
-#contact { background: var(--gradient-bg); }
-
-.contact-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 2rem;
-  margin-top: 3rem;
-}
-
-.contact-card {
-  padding: 2rem;
-  background: rgba(255,255,255,0.03);
-  border: 1px solid rgba(255,255,255,0.06);
-  border-radius: 16px;
-  transition: transform 0.3s, border-color 0.3s;
-}
-
-.contact-card:hover {
-  transform: translateY(-6px);
-  border-color: rgba(192,57,43,0.3);
-}
-
-.contact-name {
-  font-family: 'Playfair Display', serif;
-  font-size: 1.2rem; font-weight: 700;
-  margin-bottom: 1rem;
-  font-style: italic;
-  background: linear-gradient(90deg, var(--gold) 0%, var(--gold-light) 50%, var(--gold) 100%);
-  background-size: 200% auto;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  transition: background-position 0.6s ease;
-}
-
-.contact-card:hover .contact-name { background-position: right center; }
-
-.contact-detail {
-  display: flex; align-items: center; gap: 0.75rem;
-  padding: 0.4rem 0;
-  color: var(--gray);
-  font-size: 0.9rem;
-}
-
-.contact-detail .icon {
-  color: var(--gold);
-  font-size: 0.85rem;
-  width: 20px;
-  text-align: center;
-  display: inline-block;
-  transition: transform 0.3s;
-}
-
-.contact-card:hover .icon {
-  animation: icon-bounce 0.5s ease-out;
-}
-
-@keyframes icon-bounce {
-  0% { transform: scale(1); }
-  30% { transform: scale(1.4); }
-  60% { transform: scale(0.9); }
-  100% { transform: scale(1); }
-}
-
-.contact-website {
-  text-align: center;
-  margin-top: 3rem;
-  padding-top: 2rem;
-  border-top: 1px solid rgba(255,255,255,0.08);
-}
-
-.contact-website a {
-  color: var(--gold);
-  text-decoration: none;
-  font-family: 'Playfair Display', serif;
-  font-size: 1.5rem; font-weight: 700;
-  transition: color 0.3s, letter-spacing 0.3s;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.75rem;
-}
-
-.contact-website a:hover {
-  color: var(--gold-light);
-  letter-spacing: 2px;
-}
-
-/* ===== SECTION DIVIDER ===== */
-.section-divider {
-  height: 1px;
-  background: linear-gradient(90deg, transparent 0%, transparent 20%, rgba(192,57,43,0.3) 35%, var(--gold-light) 50%, rgba(192,57,43,0.3) 65%, transparent 80%, transparent 100%);
-  background-size: 200% 100%;
-  margin: 0 4rem;
-  animation: divider-sweep 4s linear infinite;
-}
-
-@keyframes divider-sweep {
-  0% { background-position: -200% center; }
-  100% { background-position: 200% center; }
-}
-
-/* ===== SVG ANIMATIONS ===== */
-
-/* Seedling SVG */
-.seedling-svg {
-  position: absolute;
-  top: 0; right: 0;
-  width: 140px; height: 180px;
-  pointer-events: none;
-  opacity: 0.7;
-}
-
-.seedling-svg .stem {
-  stroke-dasharray: 120;
-  stroke-dashoffset: 120;
-  transition: stroke-dashoffset 1.2s cubic-bezier(0.16, 1, 0.3, 1) 0.3s;
-}
-
-.seedling-svg .leaf {
-  transform-origin: 70px 100px;
-  transform: scale(0);
-  transition: transform 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) 1s;
-}
-
-.seedling-svg.active .stem { stroke-dashoffset: 0; }
-.seedling-svg.active .leaf { transform: scale(1); }
-
-/* Growth chart SVG */
-.chart-svg {
-  position: absolute;
-  top: 0; right: 0;
-  width: 180px; height: 140px;
-  pointer-events: none;
-  opacity: 0.7;
-}
-
-.chart-bar {
-  transform-origin: bottom;
-  transform: scaleY(0);
-  transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.chart-bar:nth-child(1) { transition-delay: 0.1s; }
-.chart-bar:nth-child(2) { transition-delay: 0.25s; }
-.chart-bar:nth-child(3) { transition-delay: 0.4s; }
-.chart-bar:nth-child(4) { transition-delay: 0.55s; }
-.chart-bar:nth-child(5) { transition-delay: 0.7s; }
-
-.chart-trend {
-  stroke-dasharray: 300;
-  stroke-dashoffset: 300;
-  transition: stroke-dashoffset 1.5s cubic-bezier(0.16, 1, 0.3, 1) 0.8s;
-}
-
-.chart-svg.active .chart-bar { transform: scaleY(1); }
-.chart-svg.active .chart-trend { stroke-dashoffset: 0; }
 
 /* ===== SHIMMER TEXT ===== */
 .shimmer-text {
@@ -1198,30 +231,642 @@ h2 .highlight {
   100% { background-position: 200% center; }
 }
 
-/* ===== RESPONSIVE ===== */
-@media (max-width: 1024px) {
-  section { padding: 4rem 2rem; }
-  .what-is-grid, .why-grid, .additional-grid { grid-template-columns: 1fr; gap: 2rem; }
-  .steps-grid { grid-template-columns: repeat(2, 1fr); }
-  .steps-connector { display: none; }
-  .trusted-side h2 { text-align: left; }
-  .growth-extras { grid-template-columns: 1fr; }
+/* ===== FEATURE BADGES ===== */
+.features-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+  margin-bottom: 2rem;
+}
+
+.feature-badge {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.75rem 1.2rem;
+  background: linear-gradient(90deg, rgba(192,57,43,0.2) 0%, rgba(192,57,43,0.05) 100%);
+  border: 1px solid rgba(192,57,43,0.15);
+  border-radius: 50px;
+  font-size: 0.82rem;
+  font-weight: 500;
+  transition: transform 0.3s, background 0.3s;
+  overflow: hidden;
+  position: relative;
+}
+
+.feature-badge:hover {
+  transform: translateX(6px);
+  background: linear-gradient(90deg, rgba(192,57,43,0.35) 0%, rgba(192,57,43,0.1) 100%);
+}
+
+.feature-icon {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #c0392b 0%, #e74c3c 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.8rem;
+  flex-shrink: 0;
+}
+
+/* ===== PRICING ===== */
+.pricing-row {
+  display: flex;
+  gap: 1.25rem;
+  flex-wrap: wrap;
+}
+
+.price-card {
+  flex: 1;
+  min-width: 160px;
+  padding: 1.25rem 1.5rem;
+  border-radius: 14px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.3s;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(192,57,43,0.2);
+}
+
+.price-card:hover { transform: translateY(-5px); }
+
+.price-card.featured {
+  background: linear-gradient(135deg, rgba(192,57,43,0.2), rgba(192,57,43,0.05));
+  border-color: transparent;
+}
+
+.price-card.featured::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 14px;
+  padding: 1px;
+  background: conic-gradient(from var(--angle, 0deg), var(--red), var(--gold), var(--red));
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  animation: rotate-border 4s linear infinite;
+}
+
+@keyframes rotate-border { to { --angle: 360deg; } }
+
+.price-duration {
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  color: var(--gray);
+  margin-bottom: 0.4rem;
+  font-weight: 600;
+}
+
+.price-amount {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.7rem;
+  font-weight: 900;
+  color: var(--gold);
+}
+
+.price-period {
+  font-size: 0.78rem;
+  color: var(--gray);
+}
+
+/* ===== CLIENT TAGS ===== */
+.client-tags { display: flex; flex-wrap: wrap; gap: 0.6rem; margin-top: 1.5rem; }
+
+.client-tag {
+  padding: 0.45rem 1rem;
+  background: linear-gradient(90deg, rgba(192,57,43,0.9) 0%, rgba(231,76,60,0.7) 100%);
+  border-radius: 50px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  box-shadow: 0 4px 15px rgba(192,57,43,0.3);
+}
+
+/* ===== CONTACT ===== */
+.contact-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.25rem;
+  width: 100%;
+}
+
+.contact-card {
+  padding: 1.5rem;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 14px;
+  transition: transform 0.3s, border-color 0.3s;
+}
+
+.contact-card:hover {
+  transform: translateY(-5px);
+  border-color: rgba(192,57,43,0.3);
+}
+
+.contact-name {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.05rem;
+  font-weight: 700;
+  margin-bottom: 0.75rem;
+  font-style: italic;
+  background: linear-gradient(90deg, var(--gold) 0%, var(--gold-light) 50%, var(--gold) 100%);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  transition: background-position 0.6s;
+}
+
+.contact-card:hover .contact-name { background-position: right center; }
+
+.contact-detail {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.3rem 0;
+  color: var(--gray);
+  font-size: 0.82rem;
+}
+
+.contact-detail .icon { color: var(--gold); width: 18px; text-align: center; }
+
+/* ===== BRAND LOGOS ===== */
+.brand-logos {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+.brand-logo-card {
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 10px;
+  padding: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 65px;
+  transition: transform 0.3s, background 0.3s;
+  font-weight: 700;
+  font-size: 0.78rem;
+  letter-spacing: 1px;
+  text-align: center;
+  opacity: 0.8;
+}
+
+.brand-logo-card:hover { transform: translateY(-3px); background: rgba(255,255,255,0.08); }
+
+/* ===== REASONS CARD ===== */
+.reasons-card {
+  background: linear-gradient(135deg, rgba(192,57,43,0.15), rgba(192,57,43,0.05));
+  border: 1px solid rgba(192,57,43,0.2);
+  border-radius: 18px;
+  padding: 2rem;
+  animation: animated-border 4s ease-in-out infinite;
+}
+
+@keyframes animated-border {
+  0%, 100% { border-color: rgba(192,57,43,0.2); }
+  50% { border-color: rgba(212,168,35,0.4); }
+}
+
+.reasons-card h3 {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.1rem;
+  margin-bottom: 1.25rem;
+}
+
+.reason-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.6rem;
+  padding: 0.6rem 0;
+  color: var(--gray);
+  font-size: 0.88rem;
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+}
+
+.reason-item::before {
+  content: '▸';
+  color: var(--gold);
+  flex-shrink: 0;
+}
+
+.brand-statement {
+  margin-top: 1.5rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid rgba(255,255,255,0.1);
+  font-family: 'Playfair Display', serif;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--gold);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+/* ===== SERVICE ITEMS ===== */
+.service-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 1.25rem;
+  margin-bottom: 0.75rem;
+  background: linear-gradient(90deg, rgba(192,57,43,0.15), rgba(192,57,43,0.05));
+  border: 1px solid rgba(192,57,43,0.1);
+  border-left: 3px solid transparent;
+  border-radius: 50px;
+  transition: transform 0.3s, border-left-color 0.3s;
+}
+
+.service-item:hover {
+  transform: translateX(5px);
+  border-left-color: var(--gold);
+}
+
+.service-name { font-weight: 600; font-size: 0.82rem; text-transform: uppercase; letter-spacing: 1px; }
+.service-price { color: var(--gold); font-family: 'Playfair Display', serif; font-weight: 700; font-style: italic; }
+
+/* ===== ADDON CARDS ===== */
+.addon-card {
+  display: flex;
+  gap: 1.25rem;
+  align-items: center;
+  padding: 1.25rem;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 14px;
+  transition: transform 0.3s, background 0.3s;
+  margin-bottom: 1rem;
+}
+
+.addon-card:hover { transform: translateX(6px); background: rgba(255,255,255,0.06); }
+
+.addon-card img {
+  width: 90px;
+  height: 70px;
+  object-fit: cover;
+  border-radius: 8px;
+  flex-shrink: 0;
+}
+
+.addon-name { font-family: 'Playfair Display', serif; font-size: 0.95rem; font-weight: 700; margin-bottom: 0.2rem; }
+.addon-desc { font-size: 0.75rem; color: var(--gray); margin-bottom: 0.2rem; }
+.addon-price { font-family: 'Playfair Display', serif; color: var(--gold); font-weight: 700; font-style: italic; font-size: 0.9rem; }
+
+/* ===== STEP CARDS ===== */
+.steps-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 2rem;
+  position: relative;
+  margin-top: 2rem;
+  width: 100%;
+}
+
+.step-card {
+  text-align: center;
+  position: relative;
+  z-index: 1;
+}
+
+.step-number {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #c0392b 0%, #e74c3c 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Playfair Display', serif;
+  font-size: 1.4rem;
+  font-weight: 900;
+  margin: 0 auto 1.25rem;
+  box-shadow: 0 8px 30px rgba(192,57,43,0.4);
+  transition: transform 0.3s;
+}
+
+.step-card:hover .step-number { transform: scale(1.15); }
+
+.step-card h3 {
+  font-family: 'Playfair Display', serif;
+  font-size: 1rem;
+  font-weight: 700;
+  margin-bottom: 0.6rem;
+  font-style: italic;
+}
+
+.step-card p { color: var(--gray); font-size: 0.8rem; line-height: 1.65; }
+
+/* ===== EXTRA CARDS (GROWTH) ===== */
+.extra-cards {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+  margin: 1.25rem 0;
+}
+
+.extra-card {
+  border-radius: 12px;
+  overflow: hidden;
+  position: relative;
+  aspect-ratio: 4/3;
+  transition: transform 0.4s;
+}
+
+.extra-card:hover { transform: translateY(-6px) scale(1.02); }
+
+.extra-card img {
+  width: 100%; height: 100%;
+  object-fit: cover;
+  transition: transform 0.6s;
+}
+
+.extra-card:hover img { transform: scale(1.05); }
+
+.extra-card-overlay {
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  padding: 1rem;
+  background: linear-gradient(transparent, rgba(10,22,40,0.95));
+}
+
+.extra-card-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 0.9rem;
+  font-style: italic;
+  display: inline-block;
+  padding: 0.2rem 0.6rem;
+  background: linear-gradient(90deg, rgba(192,57,43,0.9) 0%, rgba(231,76,60,0.7) 100%);
+  border-radius: 20px;
+}
+
+.extra-card-desc { font-size: 0.72rem; color: var(--gray); margin-top: 0.3rem; }
+
+/* ===== PACKAGE ADDED LIST ===== */
+.package-added { margin-top: 1.25rem; }
+.package-added-label { color: var(--gold); font-weight: 600; font-size: 0.78rem; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 0.4rem; }
+.package-added ul { list-style: none; color: var(--gray); font-size: 0.82rem; }
+.package-added li { padding: 0.2rem 0; }
+.package-added li::before { content: '✦ '; color: var(--gold); }
+
+/* ===== HERO SPECIFIC ===== */
+.hero-year {
+  display: inline-block;
+  padding: 0.35rem 1rem;
+  border: 1px solid var(--gold);
+  color: var(--gold);
+  font-size: 0.82rem;
+  font-weight: 600;
+  letter-spacing: 3px;
+  margin-bottom: 1.5rem;
+  clip-path: inset(0 100% 0 0);
+  animation: clip-reveal 0.8s 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes clip-reveal { to { clip-path: inset(0 0% 0 0); } }
+
+.hero-title {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(3.5rem, 8vw, 7rem);
+  font-weight: 900;
+  line-height: 1;
+  margin-bottom: 0.5rem;
+  min-height: 1.2em;
+}
+
+.hero-title .char-reveal {
+  display: inline-block;
+  opacity: 0;
+  transform: translateY(1.2em) rotate(8deg);
+  animation: char-in 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes char-in { to { opacity: 1; transform: translateY(0) rotate(0deg); } }
+
+.hero-subtitle {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(1.2rem, 3vw, 2.2rem);
+  font-weight: 700;
+  color: var(--gray);
+  margin-bottom: 1.5rem;
+  opacity: 0;
+  animation: fadeInUp 1s 0.9s forwards;
+}
+
+.hero-tagline {
+  font-size: 1rem;
+  color: var(--gray);
+  font-weight: 300;
+  font-style: italic;
+  opacity: 0;
+  animation: fadeInUp 1s 1.1s forwards;
+}
+
+.hero-logos {
+  display: flex;
+  gap: 1.25rem;
+  margin-top: 2.5rem;
+  align-items: center;
+  opacity: 0;
+  animation: fadeInUp 1s 1.3s forwards;
+}
+
+.hero-logos img {
+  height: 32px;
+  filter: brightness(0) invert(1);
+  opacity: 0.65;
+  transition: opacity 0.3s, transform 0.3s;
+}
+
+.hero-logos img:hover { opacity: 1; transform: scale(1.1); }
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ===== SVG CONSTELLATION (HERO) ===== */
+.hero-svg-wrap {
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 48%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+
+/* ===== PARTICLES ===== */
+.particle {
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+  animation: float-particle linear infinite;
+}
+
+@keyframes float-particle {
+  0% { transform: translateY(100vh) scale(0); opacity: 0; }
+  10% { opacity: 1; }
+  90% { opacity: 1; }
+  100% { transform: translateY(-10vh) scale(1); opacity: 0; }
+}
+
+/* ===== SLIDE-SPECIFIC LAYOUTS ===== */
+
+/* Slide 2: What Is */
+.two-col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 3.5rem;
+  align-items: center;
+  width: 100%;
+}
+
+.img-frame {
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 25px 60px rgba(0,0,0,0.5);
+  position: relative;
+}
+
+.img-frame img { width: 100%; display: block; }
+
+.img-frame::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(192,57,43,0.2), transparent);
+  pointer-events: none;
+}
+
+/* Slide 3: How it works */
+#how-it-works .slide-inner { flex-direction: column; justify-content: center; padding-top: 6rem; }
+
+/* Slide 4: Why choose */
+.why-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 3rem;
+  align-items: start;
+  width: 100%;
+}
+
+/* Slides 5 & 6: Packages */
+.pkg-layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 3rem;
+  align-items: start;
+  width: 100%;
+}
+
+.pkg-left { display: flex; flex-direction: column; gap: 0; }
+.pkg-right { display: flex; flex-direction: column; gap: 0; }
+
+/* Slide 7: Additional */
+.additional-layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 3rem;
+  align-items: start;
+  width: 100%;
+}
+
+/* Slide 8: Contact */
+#contact .slide-inner { flex-direction: column; justify-content: center; padding-top: 6rem; }
+
+.contact-header { text-align: center; margin-bottom: 2rem; }
+
+.contact-website {
+  text-align: center;
+  margin-top: 1.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid rgba(255,255,255,0.08);
+  width: 100%;
+}
+
+.contact-website a {
+  color: var(--gold);
+  text-decoration: none;
+  font-family: 'Playfair Display', serif;
+  font-size: 1.3rem;
+  font-weight: 700;
+  transition: color 0.3s, letter-spacing 0.3s;
+}
+
+.contact-website a:hover { color: var(--gold-light); letter-spacing: 2px; }
+
+/* ===== SVG PIPELINE (HOW IT WORKS) ===== */
+.pipeline-svg-wrap {
+  width: 100%;
+  position: relative;
+  margin-bottom: 1rem;
+}
+
+/* ===== PROGRESS BAR ===== */
+.scroll-progress {
+  position: fixed;
+  top: 0; left: 0;
+  height: 3px;
+  background: linear-gradient(90deg, #c0392b, #d4a823);
+  z-index: 10000;
+  width: 0%;
+  transition: width 0.1s linear;
+}
+
+/* ===== MOBILE: vertical fallback ===== */
+@media (max-width: 767px) {
+  html { overflow: auto; }
+  body { overflow-x: hidden; overflow-y: auto; height: auto; }
+
+  .h-scroll-wrapper { overflow: visible; height: auto; }
+  .h-scroll-track { flex-direction: column; width: 100%; height: auto; transform: none !important; }
+
+  .slide {
+    width: 100%;
+    height: auto;
+    min-height: 100vh;
+    padding: 5rem 1.5rem 3rem;
+    display: block;
+  }
+
+  .slide-inner {
+    padding: 0;
+    height: auto;
+    display: block;
+    max-width: 100%;
+  }
+
+  .two-col, .why-grid, .pkg-layout, .additional-layout { grid-template-columns: 1fr; gap: 2rem; }
+  .steps-grid { grid-template-columns: 1fr 1fr; }
   .contact-grid { grid-template-columns: 1fr; }
-  .seedling-svg, .chart-svg { display: none; }
-}
-
-@media (max-width: 768px) {
-  section { padding: 3rem 1.5rem; }
   .features-grid { grid-template-columns: 1fr; }
-  .pricing-row { flex-direction: column; }
-  .steps-grid { grid-template-columns: 1fr; }
-  .brand-logos { grid-template-columns: repeat(2, 1fr); }
-  .nav-links { display: none; }
-  nav { padding: 1rem; }
-  .section-divider { margin: 0 1.5rem; }
+  .hero-svg-wrap { display: none; }
+  .nav-arrow { display: none; }
+  .slide-dots { display: none; }
+
+  #how-it-works .slide-inner, #contact .slide-inner {
+    flex-direction: column;
+    padding-top: 0;
+  }
+
+  .pkg-right { margin-top: 2rem; }
 }
 
-/* ===== REDUCED MOTION ===== */
+@media (max-width: 1024px) and (min-width: 768px) {
+  .slide-inner { padding: 0 3rem; padding-top: 5rem; }
+  .steps-grid { grid-template-columns: repeat(2, 1fr); }
+  .contact-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     animation-duration: 0.01ms !important;
@@ -1232,528 +877,620 @@ h2 .highlight {
 </head>
 <body>
 
-<!-- Scroll Progress -->
 <div class="scroll-progress" id="scrollProgress"></div>
 
-<!-- Navigation -->
 <nav id="mainNav">
   <div class="nav-logo">PROAGRI<span>MEDIA</span></div>
-  <ul class="nav-links">
-    <li><a href="#what-is">About</a></li>
-    <li><a href="#how-it-works">Process</a></li>
-    <li><a href="#why-choose">Why Us</a></li>
-    <li><a href="#seedling">Seedling</a></li>
-    <li><a href="#growth">Growth</a></li>
-    <li><a href="#additional">Add-ons</a></li>
-    <li><a href="#contact">Contact</a></li>
-  </ul>
+  <div class="nav-slide-label" id="navLabel">Social Media Management</div>
 </nav>
 
-<!-- ==================== HERO ==================== -->
-<section id="hero">
-  <div class="hero-bg-image"></div>
-  <div class="hero-particles" id="particles"></div>
-  <div class="blob blob-red" style="top:-100px;right:-150px;opacity:0.04;"></div>
-  <div class="blob blob-gold" style="bottom:-100px;left:20%;opacity:0.03;"></div>
-  <div class="section-inner hero-content">
-    <div class="hero-year">2026</div>
-    <h1 class="hero-title" id="heroTitle"></h1>
-    <div class="hero-subtitle">MANAGEMENT PACKAGES</div>
-    <p class="hero-tagline">Your Digital Presence, Done Properly.</p>
-    <div class="hero-logos">
-      <img src="assets/page1_img2.png" alt="Agri4all">
-      <img src="assets/page1_img3.png" alt="JagLekker">
-      <img src="assets/page1_img4.png" alt="African Safari">
-    </div>
-  </div>
-  <div class="scroll-indicator">
-    <span>Scroll</span>
-    <div class="scroll-arrow"></div>
-  </div>
-</section>
+<button class="nav-arrow prev" id="prevBtn" aria-label="Previous slide">&#8592;</button>
+<button class="nav-arrow next" id="nextBtn" aria-label="Next slide">&#8594;</button>
 
-<div class="section-divider"></div>
+<div class="slide-dots" id="slideDots"></div>
 
-<!-- ==================== WHAT IS SM ==================== -->
-<section id="what-is">
-  <div class="blob blob-red"></div>
-  <div class="blob blob-gold"></div>
-  <div class="section-inner">
-    <div class="what-is-grid">
-      <div class="what-is-image reveal-left">
-        <img src="assets/page2_img2.jpeg" alt="Social Media Management">
+<div class="h-scroll-wrapper" id="scrollWrapper">
+  <div class="h-scroll-track" id="hTrack">
+
+    <!-- ==================== SLIDE 1: HERO ==================== -->
+    <div class="slide" id="hero">
+      <!-- Particles layer -->
+      <div id="particles" style="position:absolute;top:0;left:0;width:100%;height:100%;overflow:hidden;pointer-events:none;z-index:1;"></div>
+      <!-- Blobs -->
+      <div class="blob" style="width:500px;height:500px;background:var(--red);top:-150px;right:5%;opacity:0.04;"></div>
+      <div class="blob" style="width:350px;height:350px;background:var(--gold);bottom:-100px;left:10%;opacity:0.03;"></div>
+
+      <!-- Large constellation SVG -->
+      <div class="hero-svg-wrap">
+        <svg viewBox="0 0 520 520" width="480" height="480" fill="none" xmlns="http://www.w3.org/2000/svg" id="heroSvg">
+          <defs>
+            <radialGradient id="hg1" cx="50%" cy="50%" r="50%">
+              <stop offset="0%" stop-color="#d4a823" stop-opacity="0.25"/>
+              <stop offset="100%" stop-color="#d4a823" stop-opacity="0"/>
+            </radialGradient>
+            <filter id="glow">
+              <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+              <feMerge><feMergeNode in="coloredBlur"/><feMergeNode in="SourceGraphic"/></feMerge>
+            </filter>
+          </defs>
+
+          <!-- Central glow -->
+          <circle cx="260" cy="260" r="120" fill="url(#hg1)"/>
+
+          <!-- Connection lines -->
+          <g stroke="#d4a823" stroke-width="1" opacity="0.3" class="constellation-lines">
+            <line x1="260" y1="260" x2="140" y2="150"/>
+            <line x1="260" y1="260" x2="380" y2="140"/>
+            <line x1="260" y1="260" x2="420" y2="290"/>
+            <line x1="260" y1="260" x2="360" y2="400"/>
+            <line x1="260" y1="260" x2="150" y2="390"/>
+            <line x1="260" y1="260" x2="100" y2="280"/>
+            <line x1="140" y1="150" x2="380" y2="140"/>
+            <line x1="380" y1="140" x2="420" y2="290"/>
+            <line x1="420" y1="290" x2="360" y2="400"/>
+            <line x1="360" y1="400" x2="150" y2="390"/>
+            <line x1="150" y1="390" x2="100" y2="280"/>
+            <line x1="100" y1="280" x2="140" y2="150"/>
+          </g>
+
+          <!-- Animated pulse rings on central node -->
+          <circle cx="260" cy="260" r="55" stroke="rgba(212,168,35,0.15)" stroke-width="1" class="pulse-ring-1"/>
+          <circle cx="260" cy="260" r="75" stroke="rgba(212,168,35,0.08)" stroke-width="1" class="pulse-ring-2"/>
+
+          <!-- Central phone silhouette -->
+          <rect x="235" y="210" width="50" height="100" rx="8" fill="var(--navy-light)" stroke="var(--gold)" stroke-width="1.5"/>
+          <rect x="243" y="220" width="34" height="72" rx="3" fill="rgba(212,168,35,0.12)"/>
+          <circle cx="260" cy="298" r="4" fill="none" stroke="var(--gold)" stroke-width="1"/>
+          <!-- Screen icons: bar chart lines -->
+          <rect x="248" y="232" width="6" height="10" rx="1" fill="rgba(192,57,43,0.8)"/>
+          <rect x="257" y="228" width="6" height="14" rx="1" fill="rgba(212,168,35,0.8)"/>
+          <rect x="266" y="225" width="6" height="17" rx="1" fill="rgba(212,168,35,0.6)"/>
+          <line x1="248" y1="244" x2="274" y2="244" stroke="rgba(255,255,255,0.2)" stroke-width="0.5"/>
+
+          <!-- Orbit nodes with icons -->
+          <!-- Node 1: Camera (top-left) -->
+          <circle cx="140" cy="150" r="28" fill="var(--navy-light)" stroke="#c0392b" stroke-width="1.5" filter="url(#glow)"/>
+          <text x="140" y="155" text-anchor="middle" font-size="18" fill="white">📷</text>
+
+          <!-- Node 2: Heart (top-right) -->
+          <circle cx="380" cy="140" r="28" fill="var(--navy-light)" stroke="var(--gold)" stroke-width="1.5" filter="url(#glow)"/>
+          <text x="380" y="145" text-anchor="middle" font-size="18" fill="white">❤️</text>
+
+          <!-- Node 3: Share (right) -->
+          <circle cx="420" cy="290" r="28" fill="var(--navy-light)" stroke="#c0392b" stroke-width="1.5" filter="url(#glow)"/>
+          <text x="420" y="295" text-anchor="middle" font-size="16" fill="white">🔗</text>
+
+          <!-- Node 4: Comment (bottom-right) -->
+          <circle cx="360" cy="400" r="28" fill="var(--navy-light)" stroke="var(--gold)" stroke-width="1.5" filter="url(#glow)"/>
+          <text x="360" y="405" text-anchor="middle" font-size="16" fill="white">💬</text>
+
+          <!-- Node 5: Globe (bottom-left) -->
+          <circle cx="150" cy="390" r="28" fill="var(--navy-light)" stroke="#c0392b" stroke-width="1.5" filter="url(#glow)"/>
+          <text x="150" y="395" text-anchor="middle" font-size="16" fill="white">🌐</text>
+
+          <!-- Node 6: Signal (left) -->
+          <circle cx="100" cy="280" r="28" fill="var(--navy-light)" stroke="var(--gold)" stroke-width="1.5" filter="url(#glow)"/>
+          <text x="100" y="285" text-anchor="middle" font-size="16" fill="white">📡</text>
+
+          <!-- Floating accent dots -->
+          <circle cx="200" cy="100" r="4" fill="var(--red-bright)" opacity="0.7" class="float-dot-1"/>
+          <circle cx="330" cy="80" r="3" fill="var(--gold)" opacity="0.6" class="float-dot-2"/>
+          <circle cx="460" cy="200" r="5" fill="var(--red)" opacity="0.5" class="float-dot-3"/>
+          <circle cx="60" cy="340" r="3" fill="var(--gold-light)" opacity="0.6" class="float-dot-1"/>
+          <circle cx="440" cy="420" r="4" fill="var(--red-bright)" opacity="0.5" class="float-dot-2"/>
+        </svg>
       </div>
-      <div>
-        <div class="section-label reveal delay-1">Understanding The Service</div>
-        <h2 class="reveal delay-2">What is <span class="highlight">Social Media</span> Management?</h2>
-        <p class="text-body reveal delay-3">
-          Social media management is the strategic planning, creation, publishing and optimisation of content across social media platforms to grow your brand, generate leads and build long-term credibility.
-        </p>
-        <p class="text-emphasis reveal delay-4">
-          At ProAgri Media, we don't just post content &mdash; we build structured digital strategies that position your business in front of the right agricultural audience.
-        </p>
-        <div class="client-tags">
-          <div class="client-tag reveal-scale delay-5">NextAfrican Safari</div>
-          <div class="client-tag reveal-scale delay-6">Drotsky</div>
-          <div class="client-tag reveal-scale delay-7">LiuGong</div>
-          <div class="client-tag reveal-scale delay-8">EasyWean NoseRing</div>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
 
-<div class="section-divider"></div>
-
-<!-- ==================== HOW IT WORKS ==================== -->
-<section id="how-it-works">
-  <div class="blob blob-red" style="top:-150px;right:-100px;"></div>
-  <div class="blob blob-gold" style="bottom:-100px;left:-150px;"></div>
-  <div class="section-inner">
-    <div class="section-label reveal">Our Process</div>
-    <h2 class="reveal delay-1">How it <span class="highlight">WORKS</span></h2>
-    <p class="steps-intro reveal delay-2">
-      Our structured process ensures your content is strategic, professionally produced, and aligned with your business goals, before it ever goes live.
-    </p>
-    <div class="steps-grid">
-      <svg class="steps-connector" viewBox="0 0 1100 8" preserveAspectRatio="none">
-        <defs>
-          <linearGradient id="connectorGrad" x1="0" y1="0" x2="1" y2="0">
-            <stop offset="0%" stop-color="#c0392b"/>
-            <stop offset="50%" stop-color="#d4a823"/>
-            <stop offset="100%" stop-color="#c0392b"/>
-          </linearGradient>
-        </defs>
-        <line class="connector-line" x1="32" y1="4" x2="1068" y2="4" stroke="url(#connectorGrad)" stroke-width="3" stroke-linecap="round"/>
-      </svg>
-
-      <div class="step-card">
-        <div class="step-number">1</div>
-        <h3>Strategy &amp; Focus Session</h3>
-        <p>We meet with you to identify your key focus points, goals, target audience and priority products or services. This forms the foundation of your monthly content plan.</p>
-      </div>
-      <div class="step-card">
-        <div class="step-number">2</div>
-        <h3>Content Creation</h3>
-        <p>Our editorial and design teams develop professional visuals, written content and platform-specific messaging tailored to your brand and the agricultural market.</p>
-      </div>
-      <div class="step-card">
-        <div class="step-number">3</div>
-        <h3>Client Review &amp; Approval</h3>
-        <p>All content is shared with you for review. We refine where needed and ensure everything aligns with your expectations before publishing.</p>
-      </div>
-      <div class="step-card">
-        <div class="step-number">4</div>
-        <h3>Campaign &amp; Scheduling</h3>
-        <p>Once approved, our social media team launches structured campaigns, schedules posts strategically and manages ongoing engagement and enquiries.</p>
-      </div>
-    </div>
-  </div>
-</section>
-
-<div class="section-divider"></div>
-
-<!-- ==================== WHY BRANDS CHOOSE ==================== -->
-<section id="why-choose">
-  <div class="blob blob-red" style="top:-200px;left:-200px;"></div>
-  <div class="blob blob-gold" style="bottom:-100px;right:-150px;"></div>
-  <div class="section-inner">
-    <div class="why-grid">
-      <div>
-        <div class="reasons-card reveal-left">
-          <h3>Why Brands Choose ProAgri Media</h3>
-          <div class="reason-item reveal delay-1">Agricultural industry expertise</div>
-          <div class="reason-item reveal delay-2">Integrated editorial, design &amp; social teams</div>
-          <div class="reason-item reveal delay-3">Structured strategy &amp; measurable reporting</div>
-          <div class="reason-item reveal delay-4">Access to ProAgri's established digital network</div>
-          <div class="brand-statement reveal delay-5">
-            We don't just manage pages. We build brands
+      <div class="slide-inner">
+        <div class="hero-content" style="max-width:52%;">
+          <div class="hero-year">2026</div>
+          <h1 class="hero-title" id="heroTitle"></h1>
+          <div class="hero-subtitle">MANAGEMENT PACKAGES</div>
+          <p class="hero-tagline">Your Digital Presence, Done Properly.</p>
+          <div class="hero-logos">
+            <img src="assets/page1_img2.png" alt="Agri4all">
+            <img src="assets/page1_img3.png" alt="JagLekker">
+            <img src="assets/page1_img4.png" alt="African Safari">
           </div>
         </div>
       </div>
-      <div class="trusted-side">
-        <div class="section-label reveal-right">Our Portfolio</div>
-        <h2 class="reveal-right delay-1">Trusted by <span class="highlight">Leading Brands</span></h2>
-        <div class="brand-logos">
-          <div class="brand-logo-card spring-in"><span>NMI</span></div>
-          <div class="brand-logo-card spring-in"><span>RSA Transport</span></div>
-          <div class="brand-logo-card spring-in"><span>Fleets Insurance</span></div>
-          <div class="brand-logo-card spring-in"><span>Mahindra Tractors</span></div>
-          <div class="brand-logo-card spring-in"><span>Drotsky</span></div>
-          <div class="brand-logo-card spring-in"><span>LiuGong Africa</span></div>
-          <div class="brand-logo-card spring-in"><span>AgLeaseCo</span></div>
-          <div class="brand-logo-card spring-in"><span>EasyWean</span></div>
-          <div class="brand-logo-card spring-in"><span>+ More</span></div>
+    </div>
+
+    <!-- ==================== SLIDE 2: WHAT IS ==================== -->
+    <div class="slide" id="what-is">
+      <div class="blob" style="width:500px;height:500px;background:var(--red);top:-150px;right:-100px;opacity:0.04;"></div>
+      <div class="blob" style="width:350px;height:350px;background:var(--gold);bottom:-100px;left:-50px;opacity:0.03;"></div>
+
+      <!-- SVG megaphone decoration -->
+      <svg style="position:absolute;right:3%;bottom:5%;opacity:0.08;pointer-events:none;" width="300" height="300" viewBox="0 0 300 300" fill="none">
+        <path d="M60 130 L170 80 L170 220 L60 170 Z" fill="var(--gold)"/>
+        <rect x="30" y="130" width="30" height="40" rx="5" fill="var(--gold)"/>
+        <path d="M170 120 C210 100 240 100 260 130 C240 140 210 140 170 150 Z" fill="var(--red)"/>
+        <path d="M60 170 L75 210" stroke="var(--gold)" stroke-width="6" stroke-linecap="round"/>
+        <!-- Sound waves -->
+        <path d="M190 105 C215 115 215 185 190 195" stroke="var(--gold)" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+        <path d="M205 90 C240 108 240 192 205 210" stroke="var(--gold)" stroke-width="2" fill="none" stroke-linecap="round" opacity="0.6"/>
+        <path d="M218 78 C260 100 260 200 218 222" stroke="var(--gold)" stroke-width="1.5" fill="none" stroke-linecap="round" opacity="0.35"/>
+        <!-- Emerging social icons -->
+        <circle cx="250" cy="70" r="14" fill="rgba(192,57,43,0.6)"/>
+        <text x="250" y="75" text-anchor="middle" font-size="12" fill="white">📷</text>
+        <circle cx="278" cy="130" r="12" fill="rgba(212,168,35,0.6)"/>
+        <text x="278" y="135" text-anchor="middle" font-size="11" fill="white">❤</text>
+        <circle cx="265" cy="190" r="13" fill="rgba(192,57,43,0.6)"/>
+        <text x="265" y="195" text-anchor="middle" font-size="11" fill="white">💬</text>
+      </svg>
+
+      <div class="slide-inner">
+        <div class="two-col">
+          <div class="img-frame">
+            <img src="assets/page2_img2.jpeg" alt="Social Media Management">
+          </div>
+          <div>
+            <div class="section-label">Understanding The Service</div>
+            <h2>What is <span class="hl">Social Media</span> Management?</h2>
+            <p class="text-body">
+              Social media management is the strategic planning, creation, publishing and optimisation of content across social media platforms to grow your brand, generate leads and build long-term credibility.
+            </p>
+            <p class="text-em">
+              At ProAgri Media, we don't just post content — we build structured digital strategies that position your business in front of the right agricultural audience.
+            </p>
+            <div class="client-tags">
+              <div class="client-tag">NextAfrican Safari</div>
+              <div class="client-tag">Drotsky</div>
+              <div class="client-tag">LiuGong</div>
+              <div class="client-tag">EasyWean NoseRing</div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
-  </div>
-</section>
 
-<div class="section-divider"></div>
+    <!-- ==================== SLIDE 3: HOW IT WORKS ==================== -->
+    <div class="slide" id="how-it-works">
+      <div class="blob" style="width:400px;height:400px;background:var(--red);top:-100px;right:-100px;opacity:0.04;"></div>
+      <div class="blob" style="width:350px;height:350px;background:var(--gold);bottom:-100px;left:-100px;opacity:0.03;"></div>
 
-<!-- ==================== SEEDLING PACKAGE ==================== -->
-<section id="seedling" class="package-section">
-  <div class="blob blob-red" style="top:-100px;right:-250px;"></div>
-  <div class="blob blob-gold" style="bottom:-200px;left:-100px;"></div>
-  <div class="section-inner">
-    <div class="package-header">
-      <!-- Animated seedling SVG -->
-      <svg class="seedling-svg" viewBox="0 0 140 180" fill="none">
-        <ellipse cx="70" cy="165" rx="30" ry="5" fill="rgba(212,168,35,0.3)"/>
-        <path class="stem" d="M70 160 L70 50" stroke="#d4a823" stroke-width="3" stroke-linecap="round"/>
-        <path class="leaf" d="M70 110 C45 85 15 95 25 120 C35 105 60 105 70 110" fill="#2d6a2d" opacity="0.7"/>
-        <path class="leaf" d="M70 80 C95 55 125 65 115 90 C105 75 80 75 70 80" fill="#3a8a3a" opacity="0.7"/>
-        <path class="leaf" d="M70 55 C50 30 25 40 35 65 C45 50 60 50 70 55" fill="#2d6a2d" opacity="0.5"/>
+      <!-- Decorative circuit background -->
+      <svg style="position:absolute;inset:0;width:100%;height:100%;opacity:0.03;pointer-events:none;" viewBox="0 0 1000 600" preserveAspectRatio="xMidYMid slice">
+        <line x1="0" y1="300" x2="1000" y2="300" stroke="white" stroke-width="1"/>
+        <line x1="500" y1="0" x2="500" y2="600" stroke="white" stroke-width="1"/>
+        <circle cx="500" cy="300" r="200" stroke="white" stroke-width="1" fill="none"/>
+        <circle cx="500" cy="300" r="100" stroke="white" stroke-width="1" fill="none"/>
       </svg>
 
-      <div class="section-label reveal">Entry-Level Package</div>
-      <div class="package-name reveal delay-1">SEEDLING <span class="highlight">PACKAGE</span></div>
-      <p class="package-description reveal delay-2">
-        Your package includes an onboarding session with our team, to discuss your goals and strategies. Ideal for individuals looking to begin their journey with managed social media or enhance their current social media efforts. It helps your business establish a presence on your preferred and most relevant social media platforms.
-      </p>
-      <div class="package-added reveal delay-3">
-        <div class="package-added-label">Added Benefit</div>
-        <ul>
-          <li>2 Reels/stories (supplied footage)</li>
-          <li>Access to our Agri4all e-commerce platform</li>
-          <li>Enquiry management</li>
-        </ul>
+      <div class="slide-inner" style="flex-direction:column;justify-content:center;padding-top:5.5rem;">
+        <div style="width:100%;">
+          <div class="section-label">Our Process</div>
+          <h2>How it <span class="hl">WORKS</span></h2>
+          <p class="text-body" style="max-width:700px;">
+            Our structured process ensures your content is strategic, professionally produced, and aligned with your business goals, before it ever goes live.
+          </p>
+        </div>
+
+        <!-- Pipeline SVG -->
+        <div class="pipeline-svg-wrap">
+          <svg viewBox="0 0 900 80" width="100%" height="80" fill="none" id="pipelineSvg">
+            <defs>
+              <linearGradient id="pipeGrad" x1="0" y1="0" x2="1" y2="0">
+                <stop offset="0%" stop-color="#c0392b"/>
+                <stop offset="50%" stop-color="#d4a823"/>
+                <stop offset="100%" stop-color="#c0392b"/>
+              </linearGradient>
+            </defs>
+            <!-- Track line -->
+            <line x1="80" y1="40" x2="820" y2="40" stroke="rgba(255,255,255,0.1)" stroke-width="3"/>
+            <!-- Animated progress line -->
+            <line class="pipe-line" x1="80" y1="40" x2="820" y2="40" stroke="url(#pipeGrad)" stroke-width="3" stroke-dasharray="740" stroke-dashoffset="740"/>
+            <!-- Flowing dot -->
+            <circle class="flow-dot" cx="80" cy="40" r="5" fill="var(--gold)"/>
+            <!-- Node circles -->
+            <circle cx="80" cy="40" r="16" fill="var(--navy)" stroke="#c0392b" stroke-width="2.5"/>
+            <text x="80" y="45" text-anchor="middle" font-size="14" fill="white">🎯</text>
+            <circle cx="340" cy="40" r="16" fill="var(--navy)" stroke="var(--gold)" stroke-width="2.5"/>
+            <text x="340" y="45" text-anchor="middle" font-size="14" fill="white">✏️</text>
+            <circle cx="600" cy="40" r="16" fill="var(--navy)" stroke="#c0392b" stroke-width="2.5"/>
+            <text x="600" y="45" text-anchor="middle" font-size="14" fill="white">✓</text>
+            <circle cx="820" cy="40" r="16" fill="var(--navy)" stroke="var(--gold)" stroke-width="2.5"/>
+            <text x="820" y="45" text-anchor="middle" font-size="14" fill="white">🚀</text>
+          </svg>
+        </div>
+
+        <div class="steps-grid">
+          <div class="step-card" id="step1">
+            <div class="step-number">1</div>
+            <h3>Strategy &amp; Focus Session</h3>
+            <p>We meet with you to identify your key focus points, goals, target audience and priority products or services. This forms the foundation of your monthly content plan.</p>
+          </div>
+          <div class="step-card" id="step2">
+            <div class="step-number">2</div>
+            <h3>Content Creation</h3>
+            <p>Our editorial and design teams develop professional visuals, written content and platform-specific messaging tailored to your brand and the agricultural market.</p>
+          </div>
+          <div class="step-card" id="step3">
+            <div class="step-number">3</div>
+            <h3>Client Review &amp; Approval</h3>
+            <p>All content is shared with you for review. We refine where needed and ensure everything aligns with your expectations before publishing.</p>
+          </div>
+          <div class="step-card" id="step4">
+            <div class="step-number">4</div>
+            <h3>Campaign &amp; Scheduling</h3>
+            <p>Once approved, our social media team launches structured campaigns, schedules posts strategically and manages ongoing engagement and enquiries.</p>
+          </div>
+        </div>
       </div>
     </div>
 
-    <div class="features-grid">
-      <div class="feature-badge reveal delay-1">
-        <div class="feature-icon">&#128200;</div>
-        Lead Generation &amp; Audience Growth
-      </div>
-      <div class="feature-badge reveal delay-2">
-        <div class="feature-icon">&#128241;</div>
-        Facebook &amp; Instagram Management
-      </div>
-      <div class="feature-badge reveal delay-2">
-        <div class="feature-icon">&#128221;</div>
-        8 Professional Posts per Month
-      </div>
-      <div class="feature-badge reveal delay-3">
-        <div class="feature-icon">&#9881;</div>
-        Account Setup &amp; Page Optimisation
-      </div>
-      <div class="feature-badge reveal delay-3">
-        <div class="feature-icon">#</div>
-        Strategic Hashtag &amp; Keyword Research
-      </div>
-      <div class="feature-badge reveal delay-4">
-        <div class="feature-icon">&#128172;</div>
-        Community &amp; Engagement Management
-      </div>
-      <div class="feature-badge reveal delay-4">
-        <div class="feature-icon">&#128202;</div>
-        Campaign Management &amp; Reports
-      </div>
-      <div class="feature-badge reveal delay-5">
-        <div class="feature-icon">&#127910;</div>
-        2 Reels/Stories (supplied footage)
+    <!-- ==================== SLIDE 4: WHY CHOOSE ==================== -->
+    <div class="slide" id="why-choose">
+      <div class="blob" style="width:450px;height:450px;background:var(--red);top:-200px;left:-150px;opacity:0.04;"></div>
+      <div class="blob" style="width:350px;height:350px;background:var(--gold);bottom:-100px;right:-100px;opacity:0.03;"></div>
+
+      <!-- Puzzle SVG decoration -->
+      <svg style="position:absolute;left:3%;bottom:8%;opacity:0.06;pointer-events:none;" width="260" height="260" viewBox="0 0 260 260" fill="none">
+        <!-- 4 puzzle pieces roughly arranged -->
+        <path d="M10 10 L110 10 L110 50 C130 50 130 30 150 30 C150 30 150 50 130 50 L130 110 L110 110 L110 130 C110 150 130 150 130 130 C130 130 150 130 150 150 L50 150 L50 130 C50 130 30 130 30 150 C10 150 10 130 30 130 L30 50 C10 50 10 30 30 30 C30 10 10 10 10 10Z" fill="var(--gold)" opacity="0.5"/>
+        <path d="M150 10 L250 10 L250 110 L210 110 C210 130 230 130 230 150 C230 150 210 150 210 130 L150 130 L150 50 C170 50 170 30 150 30 Z" fill="var(--red)" opacity="0.5"/>
+        <path d="M10 150 L110 150 L110 250 L50 250 L50 210 C30 210 30 230 10 230 C10 230 10 210 30 210 L30 150 Z" fill="var(--red)" opacity="0.4"/>
+        <path d="M150 150 L250 150 L250 250 L150 250 L150 210 C150 190 130 190 130 210 C130 210 130 190 150 190 Z" fill="var(--gold)" opacity="0.4"/>
+        <!-- Central shield -->
+        <path d="M115 105 L145 95 L175 105 L175 135 C175 155 145 165 145 165 C145 165 115 155 115 135 Z" fill="var(--gold)" opacity="0.9"/>
+        <text x="145" y="135" text-anchor="middle" font-size="14" fill="var(--navy)" font-weight="bold">PA</text>
+      </svg>
+
+      <div class="slide-inner">
+        <div class="why-grid">
+          <div>
+            <div class="reasons-card">
+              <h3>Why Brands Choose ProAgri Media</h3>
+              <div class="reason-item">Agricultural industry expertise</div>
+              <div class="reason-item">Integrated editorial, design &amp; social teams</div>
+              <div class="reason-item">Structured strategy &amp; measurable reporting</div>
+              <div class="reason-item">Access to ProAgri's established digital network</div>
+              <div class="brand-statement">We don't just manage pages. We build brands.</div>
+            </div>
+          </div>
+          <div>
+            <div class="section-label">Our Portfolio</div>
+            <h2>Trusted by <span class="hl">Leading Brands</span></h2>
+            <div class="brand-logos">
+              <div class="brand-logo-card">NMI</div>
+              <div class="brand-logo-card">RSA Transport</div>
+              <div class="brand-logo-card">Fleets Insurance</div>
+              <div class="brand-logo-card">Mahindra Tractors</div>
+              <div class="brand-logo-card">Drotsky</div>
+              <div class="brand-logo-card">LiuGong Africa</div>
+              <div class="brand-logo-card">AgLeaseCo</div>
+              <div class="brand-logo-card">EasyWean</div>
+              <div class="brand-logo-card">+ More</div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
 
-    <div class="pricing-row">
-      <div class="price-card reveal delay-2">
-        <div class="price-duration">3 Months</div>
-        <div class="price-amount" data-target="9500" data-prefix="R">R9 500</div>
-        <div class="price-period">per month</div>
-      </div>
-      <div class="price-card featured reveal delay-3">
-        <div class="price-duration">6 Months</div>
-        <div class="price-amount" data-target="8500" data-prefix="R">R8 500</div>
-        <div class="price-period">per month</div>
-      </div>
-      <div class="price-card reveal delay-4">
-        <div class="price-duration">12 Months</div>
-        <div class="price-amount" data-target="7500" data-prefix="R">R7 500</div>
-        <div class="price-period">per month</div>
+    <!-- ==================== SLIDE 5: SEEDLING PACKAGE ==================== -->
+    <div class="slide" id="seedling">
+      <div class="blob" style="width:450px;height:450px;background:var(--red);top:-100px;right:-200px;opacity:0.04;"></div>
+      <div class="blob" style="width:350px;height:350px;background:var(--gold);bottom:-150px;left:-100px;opacity:0.03;"></div>
+
+      <!-- Seedling SVG decoration -->
+      <svg id="seedlingSvg" style="position:absolute;right:4%;top:12%;pointer-events:none;opacity:0.75;" width="130" height="175" viewBox="0 0 140 180" fill="none">
+        <ellipse cx="70" cy="165" rx="30" ry="5" fill="rgba(212,168,35,0.3)"/>
+        <path class="sl-stem" d="M70 160 L70 50" stroke="#d4a823" stroke-width="3" stroke-linecap="round" stroke-dasharray="120" stroke-dashoffset="120"/>
+        <path class="sl-leaf" d="M70 110 C45 85 15 95 25 120 C35 105 60 105 70 110" fill="#2d6a2d" opacity="0.7" style="transform-origin:70px 110px;transform:scale(0);"/>
+        <path class="sl-leaf" d="M70 80 C95 55 125 65 115 90 C105 75 80 75 70 80" fill="#3a8a3a" opacity="0.7" style="transform-origin:70px 80px;transform:scale(0);"/>
+        <path class="sl-leaf" d="M70 55 C50 30 25 40 35 65 C45 50 60 50 70 55" fill="#2d6a2d" opacity="0.5" style="transform-origin:70px 55px;transform:scale(0);"/>
+      </svg>
+
+      <div class="slide-inner">
+        <div class="pkg-layout">
+          <div class="pkg-left">
+            <div class="section-label">Entry-Level Package</div>
+            <div style="font-family:'Playfair Display',serif;font-size:clamp(2rem,4vw,3.2rem);font-weight:900;margin-bottom:0.75rem;">
+              SEEDLING <span class="hl">PACKAGE</span>
+            </div>
+            <p class="text-body">
+              Your package includes an onboarding session with our team, to discuss your goals and strategies. Ideal for individuals looking to begin their journey with managed social media or enhance their current social media efforts. It helps your business establish a presence on your preferred and most relevant social media platforms.
+            </p>
+            <div class="package-added">
+              <div class="package-added-label">Added Benefit</div>
+              <ul>
+                <li>2 Reels/stories (supplied footage)</li>
+                <li>Access to our Agri4all e-commerce platform</li>
+                <li>Enquiry management</li>
+              </ul>
+            </div>
+            <div class="pricing-row" style="margin-top:1.5rem;">
+              <div class="price-card">
+                <div class="price-duration">3 Months</div>
+                <div class="price-amount" data-target="9500" data-prefix="R">R9 500</div>
+                <div class="price-period">per month</div>
+              </div>
+              <div class="price-card featured">
+                <div class="price-duration">6 Months</div>
+                <div class="price-amount" data-target="8500" data-prefix="R">R8 500</div>
+                <div class="price-period">per month</div>
+              </div>
+              <div class="price-card">
+                <div class="price-duration">12 Months</div>
+                <div class="price-amount" data-target="7500" data-prefix="R">R7 500</div>
+                <div class="price-period">per month</div>
+              </div>
+            </div>
+          </div>
+          <div class="pkg-right">
+            <div class="features-grid">
+              <div class="feature-badge"><div class="feature-icon">📈</div>Lead Generation &amp; Audience Growth</div>
+              <div class="feature-badge"><div class="feature-icon">📱</div>Facebook &amp; Instagram Management</div>
+              <div class="feature-badge"><div class="feature-icon">📝</div>8 Professional Posts per Month</div>
+              <div class="feature-badge"><div class="feature-icon">⚙</div>Account Setup &amp; Page Optimisation</div>
+              <div class="feature-badge"><div class="feature-icon">#</div>Strategic Hashtag &amp; Keyword Research</div>
+              <div class="feature-badge"><div class="feature-icon">💬</div>Community &amp; Engagement Management</div>
+              <div class="feature-badge"><div class="feature-icon">📊</div>Campaign Management &amp; Reports</div>
+              <div class="feature-badge"><div class="feature-icon">🎬</div>2 Reels/Stories (supplied footage)</div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
-  </div>
-</section>
 
-<div class="section-divider"></div>
+    <!-- ==================== SLIDE 6: GROWTH PACKAGE ==================== -->
+    <div class="slide" id="growth">
+      <div class="blob" style="width:450px;height:450px;background:var(--gold);top:-150px;right:-150px;opacity:0.05;"></div>
+      <div class="blob" style="width:400px;height:400px;background:var(--red);bottom:-150px;left:-100px;opacity:0.04;"></div>
 
-<!-- ==================== GROWTH PACKAGE ==================== -->
-<section id="growth" class="package-section">
-  <div class="blob blob-gold" style="top:-150px;right:-200px;opacity:0.08;"></div>
-  <div class="blob blob-red" style="bottom:-200px;left:-150px;"></div>
-  <div class="section-inner">
-    <div class="package-header">
-      <!-- Animated growth chart SVG -->
-      <svg class="chart-svg" viewBox="0 0 180 140" fill="none">
+      <!-- Bar chart / cityscape SVG -->
+      <svg id="chartSvg" style="position:absolute;right:3%;bottom:5%;pointer-events:none;opacity:0.65;" width="180" height="145" viewBox="0 0 180 140" fill="none">
         <defs>
           <linearGradient id="barGrad" x1="0" y1="1" x2="0" y2="0">
             <stop offset="0%" stop-color="#c0392b"/>
             <stop offset="100%" stop-color="#d4a823"/>
           </linearGradient>
         </defs>
-        <rect class="chart-bar" x="10" y="80" width="22" height="50" rx="3" fill="url(#barGrad)"/>
-        <rect class="chart-bar" x="42" y="50" width="22" height="80" rx="3" fill="url(#barGrad)"/>
-        <rect class="chart-bar" x="74" y="60" width="22" height="70" rx="3" fill="url(#barGrad)"/>
-        <rect class="chart-bar" x="106" y="25" width="22" height="105" rx="3" fill="url(#barGrad)"/>
-        <rect class="chart-bar" x="138" y="10" width="22" height="120" rx="3" fill="url(#barGrad)"/>
-        <path class="chart-trend" d="M20 78 C50 65 80 55 118 22 L150 8" stroke="#d4a823" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+        <rect class="chart-bar" x="10" y="80" width="22" height="50" rx="3" fill="url(#barGrad)" style="transform-origin:center bottom;transform:scaleY(0);"/>
+        <rect class="chart-bar" x="42" y="50" width="22" height="80" rx="3" fill="url(#barGrad)" style="transform-origin:center bottom;transform:scaleY(0);"/>
+        <rect class="chart-bar" x="74" y="60" width="22" height="70" rx="3" fill="url(#barGrad)" style="transform-origin:center bottom;transform:scaleY(0);"/>
+        <rect class="chart-bar" x="106" y="25" width="22" height="105" rx="3" fill="url(#barGrad)" style="transform-origin:center bottom;transform:scaleY(0);"/>
+        <rect class="chart-bar" x="138" y="10" width="22" height="120" rx="3" fill="url(#barGrad)" style="transform-origin:center bottom;transform:scaleY(0);"/>
+        <path class="chart-trend" d="M20 78 C50 65 80 55 118 22 L150 8" stroke="#d4a823" stroke-width="2.5" stroke-linecap="round" fill="none" stroke-dasharray="300" stroke-dashoffset="300"/>
         <line x1="5" y1="132" x2="175" y2="132" stroke="rgba(255,255,255,0.2)" stroke-width="1"/>
       </svg>
 
-      <div class="section-label reveal">Premium Package</div>
-      <div class="package-name reveal delay-1">GROWTH <span class="highlight">PACKAGE</span></div>
-      <p class="package-description reveal delay-2">
-        Your package starts with an onboarding session to define your goals and strategic direction. With experience managing corporate social media, we understand the importance of timing, tone and professional communication. We implement a structured posting strategy, guide how your projects are presented, and help build a strong brand story that reflects your company's culture and impact.
-      </p>
-    </div>
-
-    <div class="features-grid">
-      <div class="feature-badge reveal delay-1">
-        <div class="feature-icon">&#128200;</div>
-        Lead generation and follower growth
-      </div>
-      <div class="feature-badge reveal delay-1">
-        <div class="feature-icon">&#128241;</div>
-        Facebook and Instagram management
-      </div>
-      <div class="feature-badge reveal delay-2">
-        <div class="feature-icon">&#128188;</div>
-        LinkedIn management
-      </div>
-      <div class="feature-badge reveal delay-2">
-        <div class="feature-icon">&#127912;</div>
-        12 designed posts per month
-      </div>
-      <div class="feature-badge reveal delay-3">
-        <div class="feature-icon">&#127916;</div>
-        2 reels/stories using supplied footage
-      </div>
-      <div class="feature-badge reveal delay-3">
-        <div class="feature-icon">&#9881;</div>
-        Account setup and page optimisation
-      </div>
-      <div class="feature-badge reveal delay-4">
-        <div class="feature-icon">#</div>
-        Strategic keyword &amp; hashtag research
-      </div>
-      <div class="feature-badge reveal delay-4">
-        <div class="feature-icon">&#128172;</div>
-        Community Engagement
-      </div>
-    </div>
-
-    <div class="growth-extras">
-      <div class="extra-card reveal-scale delay-2">
-        <img src="assets/page7_img2.jpeg" alt="Website Article">
-        <div class="extra-card-overlay">
-          <div class="extra-card-title">1 website article p/m</div>
-          <div class="extra-card-desc">Monthly article published on ProAgriMedia.com to strengthen your brand.</div>
-        </div>
-      </div>
-      <div class="extra-card reveal-scale delay-3">
-        <img src="assets/page7_img3.jpeg" alt="Video Edit">
-        <div class="extra-card-overlay">
-          <div class="extra-card-title">1 video edit p/m</div>
-          <div class="extra-card-desc">Monthly edited video using supplied footage for social media use.</div>
-        </div>
-      </div>
-      <div class="extra-card reveal-scale delay-4">
-        <img src="assets/page7_img4.jpeg" alt="Monthly Analytics">
-        <div class="extra-card-overlay">
-          <div class="extra-card-title">Monthly analytical reports</div>
-          <div class="extra-card-desc">Monthly performance report highlighting growth and engagement.</div>
-        </div>
-      </div>
-    </div>
-
-    <div class="pricing-row">
-      <div class="price-card reveal delay-2">
-        <div class="price-duration">3 Months</div>
-        <div class="price-amount" data-target="14500" data-prefix="R">R14 500</div>
-        <div class="price-period">per month</div>
-      </div>
-      <div class="price-card featured reveal delay-3">
-        <div class="price-duration">6 Months</div>
-        <div class="price-amount" data-target="12500" data-prefix="R">R12 500</div>
-        <div class="price-period">per month</div>
-      </div>
-      <div class="price-card reveal delay-4">
-        <div class="price-duration">12 Months</div>
-        <div class="price-amount" data-target="11000" data-prefix="R">R11 000</div>
-        <div class="price-period">per month</div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<div class="section-divider"></div>
-
-<!-- ==================== ADDITIONAL SERVICES ==================== -->
-<section id="additional">
-  <div class="blob blob-red" style="top:-100px;left:-200px;opacity:0.04;"></div>
-  <div class="section-inner">
-    <div class="section-label reveal">Customise Your Package</div>
-    <h2 class="reveal delay-1">Additional <span class="highlight">Services</span></h2>
-
-    <div class="additional-grid" style="margin-top: 3rem;">
-      <div class="addon-list">
-        <div class="addon-card reveal-left delay-1">
-          <img src="assets/page8_img2.jpeg" alt="Additional Posts">
-          <div>
-            <div class="addon-name">Add 10 Additional</div>
-            <div class="addon-desc">10 extra professionally designed posts per month.</div>
-            <div class="addon-price">R2 000.00 p/m</div>
+      <div class="slide-inner">
+        <div class="pkg-layout">
+          <div class="pkg-left">
+            <div class="section-label">Premium Package</div>
+            <div style="font-family:'Playfair Display',serif;font-size:clamp(2rem,4vw,3.2rem);font-weight:900;margin-bottom:0.75rem;">
+              GROWTH <span class="hl">PACKAGE</span>
+            </div>
+            <p class="text-body">
+              Your package starts with an onboarding session to define your goals and strategic direction. With experience managing corporate social media, we understand the importance of timing, tone and professional communication. We implement a structured posting strategy, guide how your projects are presented, and help build a strong brand story that reflects your company's culture and impact.
+            </p>
+            <div class="extra-cards">
+              <div class="extra-card">
+                <img src="assets/page7_img2.jpeg" alt="Website Article">
+                <div class="extra-card-overlay">
+                  <div class="extra-card-title">1 website article p/m</div>
+                  <div class="extra-card-desc">Monthly article on ProAgriMedia.com to strengthen your brand.</div>
+                </div>
+              </div>
+              <div class="extra-card">
+                <img src="assets/page7_img3.jpeg" alt="Video Edit">
+                <div class="extra-card-overlay">
+                  <div class="extra-card-title">1 video edit p/m</div>
+                  <div class="extra-card-desc">Monthly edited video using supplied footage.</div>
+                </div>
+              </div>
+              <div class="extra-card">
+                <img src="assets/page7_img4.jpeg" alt="Analytics">
+                <div class="extra-card-overlay">
+                  <div class="extra-card-title">Monthly analytics</div>
+                  <div class="extra-card-desc">Performance report highlighting growth and engagement.</div>
+                </div>
+              </div>
+            </div>
+            <div class="pricing-row">
+              <div class="price-card">
+                <div class="price-duration">3 Months</div>
+                <div class="price-amount" data-target="14500" data-prefix="R">R14 500</div>
+                <div class="price-period">per month</div>
+              </div>
+              <div class="price-card featured">
+                <div class="price-duration">6 Months</div>
+                <div class="price-amount" data-target="12500" data-prefix="R">R12 500</div>
+                <div class="price-period">per month</div>
+              </div>
+              <div class="price-card">
+                <div class="price-duration">12 Months</div>
+                <div class="price-amount" data-target="11000" data-prefix="R">R11 000</div>
+                <div class="price-period">per month</div>
+              </div>
+            </div>
           </div>
-        </div>
-        <div class="addon-card reveal-left delay-2">
-          <img src="assets/page8_img3.jpeg" alt="Additional Posts">
-          <div>
-            <div class="addon-name">Add 20 Additional</div>
-            <div class="addon-desc">20 extra professionally designed posts per month.</div>
-            <div class="addon-price">R4 000.00 p/m</div>
-          </div>
-        </div>
-        <div class="addon-card reveal-left delay-3">
-          <img src="assets/page8_img4.jpeg" alt="Graphic Design">
-          <div>
-            <div class="addon-name">Graphic Design</div>
-            <div class="addon-desc">Unlimited design support across social and marketing materials.</div>
-            <div class="addon-price">R6 500.00 p/m</div>
+          <div class="pkg-right">
+            <div class="features-grid">
+              <div class="feature-badge"><div class="feature-icon">📈</div>Lead generation and follower growth</div>
+              <div class="feature-badge"><div class="feature-icon">📱</div>Facebook and Instagram management</div>
+              <div class="feature-badge"><div class="feature-icon">💼</div>LinkedIn management</div>
+              <div class="feature-badge"><div class="feature-icon">🎨</div>12 designed posts per month</div>
+              <div class="feature-badge"><div class="feature-icon">🎬</div>2 reels/stories using supplied footage</div>
+              <div class="feature-badge"><div class="feature-icon">⚙</div>Account setup and page optimisation</div>
+              <div class="feature-badge"><div class="feature-icon">#</div>Strategic keyword &amp; hashtag research</div>
+              <div class="feature-badge"><div class="feature-icon">💬</div>Community Engagement</div>
+            </div>
           </div>
         </div>
       </div>
+    </div>
 
-      <div class="services-side">
-        <h2 class="reveal-right">Quick <span class="highlight">Add-ons</span></h2>
-        <div class="service-item reveal-right delay-2">
-          <span class="service-name">Add Platform</span>
-          <span class="service-price">R2 000.00</span>
+    <!-- ==================== SLIDE 7: ADDITIONAL SERVICES ==================== -->
+    <div class="slide" id="additional">
+      <div class="blob" style="width:400px;height:400px;background:var(--red);top:-100px;left:-150px;opacity:0.03;"></div>
+
+      <!-- Toolbox SVG decoration -->
+      <svg style="position:absolute;right:3%;top:15%;opacity:0.07;pointer-events:none;" width="240" height="200" viewBox="0 0 240 200" fill="none">
+        <!-- Toolbox body -->
+        <rect x="20" y="80" width="200" height="110" rx="8" fill="var(--gold)"/>
+        <rect x="20" y="80" width="200" height="30" rx="8" fill="var(--red)"/>
+        <!-- Handle -->
+        <path d="M80 80 L80 55 Q80 40 100 40 L140 40 Q160 40 160 55 L160 80" stroke="var(--gold)" stroke-width="6" fill="none" stroke-linecap="round"/>
+        <!-- Tools floating out -->
+        <rect x="40" y="20" width="8" height="40" rx="4" fill="var(--gold)" transform="rotate(-25 44 40)"/>
+        <rect x="44" y="17" width="16" height="8" rx="3" fill="var(--gold)" transform="rotate(-25 52 21)"/>
+        <circle cx="185" cy="30" r="12" fill="none" stroke="var(--gold)" stroke-width="4"/>
+        <rect x="183" y="10" width="4" height="16" rx="2" fill="var(--gold)"/>
+        <rect x="175" y="42" width="20" height="4" rx="2" fill="var(--gold)"/>
+        <!-- Camera icon -->
+        <rect x="95" y="10" width="40" height="30" rx="5" fill="var(--red)"/>
+        <circle cx="115" cy="25" r="9" fill="none" stroke="white" stroke-width="2"/>
+        <rect x="108" y="6" width="14" height="6" rx="2" fill="var(--red)"/>
+      </svg>
+
+      <div class="slide-inner">
+        <div class="additional-layout">
+          <div>
+            <div class="section-label">Customise Your Package</div>
+            <h2>Additional <span class="hl">Services</span></h2>
+            <div class="addon-card">
+              <img src="assets/page8_img2.jpeg" alt="Additional Posts">
+              <div>
+                <div class="addon-name">Add 10 Additional Posts</div>
+                <div class="addon-desc">10 extra professionally designed posts per month.</div>
+                <div class="addon-price">R2 000.00 p/m</div>
+              </div>
+            </div>
+            <div class="addon-card">
+              <img src="assets/page8_img3.jpeg" alt="Additional Posts">
+              <div>
+                <div class="addon-name">Add 20 Additional Posts</div>
+                <div class="addon-desc">20 extra professionally designed posts per month.</div>
+                <div class="addon-price">R4 000.00 p/m</div>
+              </div>
+            </div>
+            <div class="addon-card">
+              <img src="assets/page8_img4.jpeg" alt="Graphic Design">
+              <div>
+                <div class="addon-name">Graphic Design</div>
+                <div class="addon-desc">Unlimited design support across social and marketing materials.</div>
+                <div class="addon-price">R6 500.00 p/m</div>
+              </div>
+            </div>
+          </div>
+          <div>
+            <h2 style="margin-bottom:1.5rem;">Quick <span class="hl">Add-ons</span></h2>
+            <div class="service-item">
+              <span class="service-name">Add Platform</span>
+              <span class="service-price">R2 000.00</span>
+            </div>
+            <div class="service-item">
+              <span class="service-name">Photoshoot</span>
+              <span class="service-price">POR</span>
+            </div>
+            <div class="service-item">
+              <span class="service-name">Video Shoot</span>
+              <span class="service-price">POR</span>
+            </div>
+          </div>
         </div>
-        <div class="service-item reveal-right delay-3">
-          <span class="service-name">Photoshoot</span>
-          <span class="service-price">POR</span>
+      </div>
+    </div>
+
+    <!-- ==================== SLIDE 8: CONTACT ==================== -->
+    <div class="slide" id="contact">
+      <div class="blob" style="width:450px;height:450px;background:var(--gold);top:-100px;right:-100px;opacity:0.04;"></div>
+      <div class="blob" style="width:400px;height:400px;background:var(--red);bottom:-150px;left:-100px;opacity:0.04;"></div>
+
+      <!-- Network globe SVG -->
+      <svg style="position:absolute;right:2%;top:50%;transform:translateY(-50%);opacity:0.07;pointer-events:none;" width="320" height="320" viewBox="0 0 320 320" fill="none">
+        <circle cx="160" cy="160" r="130" stroke="var(--gold)" stroke-width="1.5" fill="none"/>
+        <circle cx="160" cy="160" r="90" stroke="var(--gold)" stroke-width="1" fill="none" opacity="0.6"/>
+        <circle cx="160" cy="160" r="50" stroke="var(--gold)" stroke-width="1" fill="none" opacity="0.4"/>
+        <ellipse cx="160" cy="160" rx="130" ry="50" stroke="var(--gold)" stroke-width="1" fill="none" opacity="0.5"/>
+        <ellipse cx="160" cy="160" rx="50" ry="130" stroke="var(--gold)" stroke-width="1" fill="none" opacity="0.5"/>
+        <line x1="30" y1="160" x2="290" y2="160" stroke="var(--gold)" stroke-width="1" opacity="0.4"/>
+        <line x1="160" y1="30" x2="160" y2="290" stroke="var(--gold)" stroke-width="1" opacity="0.4"/>
+        <!-- Connection dots -->
+        <circle cx="100" cy="100" r="5" fill="var(--gold)"/>
+        <circle cx="220" cy="120" r="5" fill="var(--red)"/>
+        <circle cx="80" cy="220" r="5" fill="var(--gold)"/>
+        <circle cx="240" cy="210" r="5" fill="var(--red)"/>
+        <circle cx="160" cy="60" r="5" fill="var(--gold)"/>
+        <circle cx="160" cy="260" r="5" fill="var(--gold)"/>
+        <!-- Connecting lines -->
+        <line x1="100" y1="100" x2="220" y2="120" stroke="var(--gold)" stroke-width="0.8" opacity="0.5"/>
+        <line x1="220" y1="120" x2="240" y2="210" stroke="var(--gold)" stroke-width="0.8" opacity="0.5"/>
+        <line x1="100" y1="100" x2="80" y2="220" stroke="var(--gold)" stroke-width="0.8" opacity="0.5"/>
+        <line x1="80" y1="220" x2="240" y2="210" stroke="var(--gold)" stroke-width="0.8" opacity="0.5"/>
+        <line x1="100" y1="100" x2="160" y2="60" stroke="var(--gold)" stroke-width="0.8" opacity="0.5"/>
+        <line x1="80" y1="220" x2="160" y2="260" stroke="var(--gold)" stroke-width="0.8" opacity="0.5"/>
+        <!-- Pin markers -->
+        <path d="M100 100 L100 80 Q100 70 108 70 Q116 70 116 80 L116 100 Q108 115 100 100Z" fill="var(--gold)"/>
+        <path d="M220 120 L220 100 Q220 90 228 90 Q236 90 236 100 L236 120 Q228 135 220 120Z" fill="var(--red)"/>
+      </svg>
+
+      <div class="slide-inner" style="flex-direction:column;justify-content:center;padding-top:5.5rem;">
+        <div class="contact-header">
+          <div class="section-label">Get In Touch</div>
+          <h2>Let's <span class="hl shimmer-text" style="-webkit-text-fill-color:transparent;">Connect</span></h2>
         </div>
-        <div class="service-item reveal-right delay-4">
-          <span class="service-name">Video Shoot</span>
-          <span class="service-price">POR</span>
+        <div class="contact-grid">
+          <div class="contact-card">
+            <div class="contact-name">Quintus Grobler</div>
+            <div class="contact-detail"><span class="icon">📞</span> +27 (0)83 302 0384</div>
+            <div class="contact-detail"><span class="icon">✉</span> quintus@proagri.co.za</div>
+          </div>
+          <div class="contact-card">
+            <div class="contact-name">Beth Foster</div>
+            <div class="contact-detail"><span class="icon">📞</span> +27 (0)84 994 0123</div>
+            <div class="contact-detail"><span class="icon">✉</span> beth@proagri.co.za</div>
+          </div>
+          <div class="contact-card">
+            <div class="contact-name">Tiny Smith</div>
+            <div class="contact-detail"><span class="icon">📞</span> +27 (0)82 698 3353</div>
+            <div class="contact-detail"><span class="icon">✉</span> tiny@proagri.co.za</div>
+          </div>
+          <div class="contact-card">
+            <div class="contact-name">Kevin Greeff</div>
+            <div class="contact-detail"><span class="icon">📞</span> +27 (0)78 374 8597</div>
+            <div class="contact-detail"><span class="icon">✉</span> kevin@proagri.co.za</div>
+          </div>
+          <div class="contact-card">
+            <div class="contact-name">Nikita Scriven</div>
+            <div class="contact-detail"><span class="icon">📞</span> +27 (0)84 233 0123</div>
+            <div class="contact-detail"><span class="icon">✉</span> nikita@proagri.co.za</div>
+          </div>
+          <div class="contact-card">
+            <div class="contact-name">Zainab Pandor</div>
+            <div class="contact-detail"><span class="icon">📞</span> +260 977 699 786</div>
+            <div class="contact-detail"><span class="icon">✉</span> zainab@proagri.co.za</div>
+          </div>
         </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<div class="section-divider"></div>
-
-<!-- ==================== CONTACT ==================== -->
-<section id="contact">
-  <div class="blob blob-gold" style="top:-100px;right:-100px;"></div>
-  <div class="blob blob-red" style="bottom:-150px;left:-100px;"></div>
-  <div class="section-inner">
-    <div style="text-align: center;">
-      <div class="section-label reveal">Get In Touch</div>
-      <h2 class="reveal delay-1">Let's <span class="highlight shimmer-text">Connect</span></h2>
-    </div>
-
-    <div class="contact-grid">
-      <div class="contact-card reveal delay-1">
-        <div class="contact-name">Quintus Grobler</div>
-        <div class="contact-detail"><span class="icon">&#128222;</span> +27 (0)83 302 0384</div>
-        <div class="contact-detail"><span class="icon">&#9993;</span> quintus@proagri.co.za</div>
-      </div>
-      <div class="contact-card reveal delay-2">
-        <div class="contact-name">Beth Foster</div>
-        <div class="contact-detail"><span class="icon">&#128222;</span> +27 (0)84 994 0123</div>
-        <div class="contact-detail"><span class="icon">&#9993;</span> beth@proagri.co.za</div>
-      </div>
-      <div class="contact-card reveal delay-3">
-        <div class="contact-name">Tiny Smith</div>
-        <div class="contact-detail"><span class="icon">&#128222;</span> +27 (0)82 698 3353</div>
-        <div class="contact-detail"><span class="icon">&#9993;</span> tiny@proagri.co.za</div>
-      </div>
-      <div class="contact-card reveal delay-4">
-        <div class="contact-name">Kevin Greeff</div>
-        <div class="contact-detail"><span class="icon">&#128222;</span> +27 (0)78 374 8597</div>
-        <div class="contact-detail"><span class="icon">&#9993;</span> kevin@proagri.co.za</div>
-      </div>
-      <div class="contact-card reveal delay-5">
-        <div class="contact-name">Nikita Scriven</div>
-        <div class="contact-detail"><span class="icon">&#128222;</span> +27 (0)84 233 0123</div>
-        <div class="contact-detail"><span class="icon">&#9993;</span> nikita@proagri.co.za</div>
-      </div>
-      <div class="contact-card reveal delay-6">
-        <div class="contact-name">Zainab Pandor</div>
-        <div class="contact-detail"><span class="icon">&#128222;</span> +260 977 699 786</div>
-        <div class="contact-detail"><span class="icon">&#9993;</span> zainab@proagri.co.za</div>
+        <div class="contact-website">
+          <a href="https://www.proagrimedia.com" target="_blank">🌐 www.proagrimedia.com</a>
+        </div>
+        <footer style="text-align:center;margin-top:1rem;color:var(--gray);font-size:0.75rem;">&copy; 2026 ProAgri Media. All rights reserved.</footer>
       </div>
     </div>
 
-    <div class="contact-website reveal delay-5">
-      <a href="https://www.proagrimedia.com" target="_blank">
-        &#127760; www.proagrimedia.com
-      </a>
-    </div>
-  </div>
-</section>
-
-<!-- Footer -->
-<footer style="text-align: center; padding: 2rem; color: var(--gray); font-size: 0.8rem; border-top: 1px solid rgba(255,255,255,0.05);">
-  &copy; 2026 ProAgri Media. All rights reserved.
-</footer>
+  </div><!-- end h-scroll-track -->
+</div><!-- end h-scroll-wrapper -->
 
 <script>
-// ===== REGISTER GSAP =====
 gsap.registerPlugin(ScrollTrigger);
 
-// ===== SCROLL PROGRESS =====
-var progressBar = document.getElementById('scrollProgress');
-window.addEventListener('scroll', function() {
-  var scrollTop = window.scrollY;
-  var docHeight = document.documentElement.scrollHeight - window.innerHeight;
-  progressBar.style.width = (scrollTop / docHeight) * 100 + '%';
-});
+// ===== SLIDE LABELS =====
+var slideLabels = [
+  'Social Media Management',
+  'What Is Social Media Management',
+  'How It Works',
+  'Why Choose ProAgri Media',
+  'Seedling Package',
+  'Growth Package',
+  'Additional Services',
+  'Contact'
+];
 
-// ===== NAV SHOW/HIDE + ACTIVE SECTION =====
-var nav = document.getElementById('mainNav');
-window.addEventListener('scroll', function() {
-  if (window.scrollY > 300) {
-    nav.classList.add('visible');
-  } else {
-    nav.classList.remove('visible');
-  }
-});
-
-// Active section tracking
-var sections = document.querySelectorAll('section[id]');
-var navLinks = document.querySelectorAll('.nav-links a');
-
-var sectionObserver = new IntersectionObserver(function(entries) {
-  entries.forEach(function(entry) {
-    if (entry.isIntersecting) {
-      navLinks.forEach(function(link) { link.classList.remove('active-section'); });
-      var activeLink = document.querySelector('.nav-links a[href="#' + entry.target.id + '"]');
-      if (activeLink) activeLink.classList.add('active-section');
-    }
-  });
-}, { threshold: 0.3 });
-
-sections.forEach(function(section) { sectionObserver.observe(section); });
-
-// ===== INTERSECTION OBSERVER FOR REVEALS =====
-var revealObserver = new IntersectionObserver(function(entries) {
-  entries.forEach(function(entry) {
-    if (entry.isIntersecting) {
-      entry.target.classList.add('active');
-    }
-  });
-}, { rootMargin: '50px 0px -20px 0px', threshold: 0.05 });
-
-document.querySelectorAll('.reveal, .reveal-left, .reveal-right, .reveal-scale, .spring-in, .seedling-svg, .chart-svg, .steps-connector').forEach(function(el) {
-  revealObserver.observe(el);
-});
-
-// ===== HERO CHAR-BY-CHAR ANIMATION =====
+// ===== HERO CHAR-BY-CHAR =====
 (function() {
   var heroTitle = document.getElementById('heroTitle');
   var words = [
@@ -1761,18 +1498,17 @@ document.querySelectorAll('.reveal, .reveal-left, .reveal-right, .reveal-scale, 
     { text: 'MEDIA', highlight: true }
   ];
   var charIndex = 0;
-
   words.forEach(function(word) {
     var wrapper = null;
     if (word.highlight) {
       wrapper = document.createElement('span');
-      wrapper.className = 'highlight';
+      wrapper.className = 'hl';
+      wrapper.style.display = 'inline';
     }
-
     word.text.split('').forEach(function(char) {
       var span = document.createElement('span');
       span.className = 'char-reveal';
-      span.style.animationDelay = (0.5 + charIndex * 0.05) + 's';
+      span.style.animationDelay = (0.5 + charIndex * 0.055) + 's';
       span.textContent = char === ' ' ? '\u00A0' : char;
       if (wrapper) {
         wrapper.appendChild(span);
@@ -1781,254 +1517,276 @@ document.querySelectorAll('.reveal, .reveal-left, .reveal-right, .reveal-scale, 
       }
       charIndex++;
     });
-
-    if (wrapper) {
-      heroTitle.appendChild(wrapper);
-    }
+    if (wrapper) { heroTitle.appendChild(wrapper); }
   });
 })();
 
 // ===== PARTICLES =====
-var particlesContainer = document.getElementById('particles');
-
+var particlesEl = document.getElementById('particles');
 function createParticle() {
-  var particle = document.createElement('div');
-  particle.classList.add('particle');
-  var size = Math.random() * 6 + 2;
-  particle.style.width = size + 'px';
-  particle.style.height = size + 'px';
-  particle.style.left = Math.random() * 100 + '%';
-  particle.style.animationDuration = (Math.random() * 8 + 6) + 's';
-  particle.style.animationDelay = (Math.random() * 4) + 's';
+  var p = document.createElement('div');
+  p.className = 'particle';
+  var size = Math.random() * 5 + 2;
+  p.style.cssText = 'width:' + size + 'px;height:' + size + 'px;left:' + (Math.random() * 100) + '%;animation-duration:' + (Math.random() * 8 + 6) + 's;animation-delay:' + (Math.random() * 4) + 's;background:' + ['rgba(212,168,35,0.4)', 'rgba(192,57,43,0.3)', 'rgba(255,255,255,0.15)'][Math.floor(Math.random() * 3)] + ';';
+  particlesEl.appendChild(p);
+  setTimeout(function() { if (p.parentNode) p.parentNode.removeChild(p); }, 16000);
+}
+for (var pi = 0; pi < 25; pi++) { setTimeout(createParticle, pi * 200); }
+setInterval(createParticle, 900);
 
-  var colors = ['rgba(212, 168, 35, 0.4)', 'rgba(192, 57, 43, 0.3)', 'rgba(255, 255, 255, 0.15)'];
-  particle.style.background = colors[Math.floor(Math.random() * colors.length)];
-  particlesContainer.appendChild(particle);
-  setTimeout(function() { particle.remove(); }, 16000);
+// ===== SLIDE SYSTEM =====
+var totalSlides = 8;
+var currentSlide = 0;
+var isAnimating = false;
+
+var track = document.getElementById('hTrack');
+var navLabel = document.getElementById('navLabel');
+var prevBtn = document.getElementById('prevBtn');
+var nextBtn = document.getElementById('nextBtn');
+var dotsWrap = document.getElementById('slideDots');
+
+// Build dots
+var dots = [];
+for (var di = 0; di < totalSlides; di++) {
+  (function(i) {
+    var dot = document.createElement('button');
+    dot.className = 'slide-dot' + (i === 0 ? ' active' : '');
+    dot.setAttribute('aria-label', 'Go to slide ' + (i + 1));
+    dot.addEventListener('click', function() { goToSlide(i); });
+    dotsWrap.appendChild(dot);
+    dots.push(dot);
+  })(di);
 }
 
-for (var i = 0; i < 30; i++) { setTimeout(createParticle, i * 200); }
-setInterval(createParticle, 800);
-
-// ===== SMOOTH SCROLL =====
-document.querySelectorAll('a[href^="#"]').forEach(function(anchor) {
-  anchor.addEventListener('click', function(e) {
-    e.preventDefault();
-    var target = document.querySelector(this.getAttribute('href'));
-    if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+function updateUI(idx) {
+  dots.forEach(function(d, i) {
+    d.classList.toggle('active', i === idx);
   });
-});
+  navLabel.textContent = slideLabels[idx];
+  prevBtn.disabled = idx === 0;
+  nextBtn.disabled = idx === totalSlides - 1;
+  document.getElementById('scrollProgress').style.width = (idx / (totalSlides - 1) * 100) + '%';
+}
 
-// ===== PARALLAX ON HERO =====
-var heroBg = document.querySelector('.hero-bg-image');
-window.addEventListener('scroll', function() {
-  var scrolled = window.scrollY;
-  if (scrolled < window.innerHeight) {
-    heroBg.style.transform = 'translateY(' + (scrolled * 0.4) + 'px) scale(1.1)';
-    heroBg.style.opacity = 0.15 - (scrolled / window.innerHeight * 0.15);
+function goToSlide(idx) {
+  if (isAnimating || idx === currentSlide) return;
+  if (idx < 0 || idx >= totalSlides) return;
+  isAnimating = true;
+  currentSlide = idx;
+  updateUI(idx);
+  gsap.to(track, {
+    x: -(idx * window.innerWidth),
+    duration: 0.9,
+    ease: 'power3.inOut',
+    onComplete: function() {
+      isAnimating = false;
+      triggerSlideEntrance(idx);
+    }
+  });
+}
+
+function triggerSlideEntrance(idx) {
+  var slideIds = ['hero', 'what-is', 'how-it-works', 'why-choose', 'seedling', 'growth', 'additional', 'contact'];
+  var slide = document.getElementById(slideIds[idx]);
+  if (!slide) return;
+
+  if (idx === 2) { animatePipeline(); animateSteps(); }
+  if (idx === 4) { animateSeedling(); animateCounters(slide); }
+  if (idx === 5) { animateChart(); animateCounters(slide); }
+
+  // Stagger-in inner content
+  var inner = slide.querySelector('.slide-inner');
+  if (inner) {
+    gsap.fromTo(inner, { opacity: 0, x: 60 }, { opacity: 1, x: 0, duration: 0.7, ease: 'power3.out' });
+  }
+}
+
+// ===== ARROW BUTTONS =====
+prevBtn.addEventListener('click', function() { goToSlide(currentSlide - 1); });
+nextBtn.addEventListener('click', function() { goToSlide(currentSlide + 1); });
+
+// ===== KEYBOARD =====
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
+    e.preventDefault();
+    goToSlide(currentSlide + 1);
+  } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+    e.preventDefault();
+    goToSlide(currentSlide - 1);
   }
 });
 
-// ===== GSAP: STEP NUMBERS SPRING ENTRANCE =====
-document.querySelectorAll('.step-number').forEach(function(el, i) {
-  gsap.fromTo(el,
-    { scale: 0.3, opacity: 0 },
-    {
-      scale: 1, opacity: 1,
-      duration: 0.6,
-      ease: 'back.out(1.7)',
-      scrollTrigger: {
-        trigger: el,
-        start: 'top 85%',
-        once: true
-      },
-      delay: i * 0.15,
-      onComplete: function() {
-        el.classList.add('pulsing');
-      }
+// ===== MOUSE WHEEL =====
+var wheelTimeout = null;
+var wheelAccum = 0;
+window.addEventListener('wheel', function(e) {
+  e.preventDefault();
+  wheelAccum += e.deltaY;
+  clearTimeout(wheelTimeout);
+  wheelTimeout = setTimeout(function() {
+    if (Math.abs(wheelAccum) > 40) {
+      if (wheelAccum > 0) { goToSlide(currentSlide + 1); }
+      else { goToSlide(currentSlide - 1); }
     }
-  );
+    wheelAccum = 0;
+  }, 80);
+}, { passive: false });
+
+// ===== TOUCH SWIPE =====
+var touchStartX = 0;
+var touchStartY = 0;
+window.addEventListener('touchstart', function(e) {
+  touchStartX = e.touches[0].clientX;
+  touchStartY = e.touches[0].clientY;
+}, { passive: true });
+window.addEventListener('touchend', function(e) {
+  var dx = e.changedTouches[0].clientX - touchStartX;
+  var dy = e.changedTouches[0].clientY - touchStartY;
+  if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 50) {
+    if (dx < 0) { goToSlide(currentSlide + 1); }
+    else { goToSlide(currentSlide - 1); }
+  }
+}, { passive: true });
+
+// ===== HANDLE RESIZE =====
+window.addEventListener('resize', function() {
+  gsap.set(track, { x: -(currentSlide * window.innerWidth) });
 });
 
-// ===== GSAP: STEP CARDS STAGGERED =====
-document.querySelectorAll('.step-card').forEach(function(card, i) {
-  gsap.fromTo(card,
-    { y: 50, opacity: 0 },
-    {
-      y: 0, opacity: 1,
-      duration: 0.7,
-      ease: 'power3.out',
-      scrollTrigger: {
-        trigger: card,
-        start: 'top 85%',
-        once: true
-      },
-      delay: i * 0.12
-    }
-  );
-});
+// ===== PIPELINE ANIMATION =====
+function animatePipeline() {
+  var pipeLine = document.querySelector('.pipe-line');
+  var flowDot = document.querySelector('.flow-dot');
+  if (!pipeLine) return;
+  gsap.to(pipeLine, { strokeDashoffset: 0, duration: 1.8, ease: 'power2.out' });
+  gsap.to(flowDot, { x: 740, duration: 1.8, ease: 'power2.out' });
+}
 
-// ===== GSAP: COUNTER ANIMATIONS =====
-document.querySelectorAll('.price-amount[data-target]').forEach(function(el) {
-  var target = parseInt(el.getAttribute('data-target'), 10);
-  var prefix = el.getAttribute('data-prefix') || '';
-  var obj = { val: 0 };
-
-  ScrollTrigger.create({
-    trigger: el,
-    start: 'top 85%',
-    once: true,
-    onEnter: function() {
-      gsap.to(obj, {
-        val: target,
-        duration: 1.8,
-        ease: 'power2.out',
-        onUpdate: function() {
-          var v = Math.round(obj.val);
-          var str = v.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
-          el.textContent = prefix + str;
-        }
-      });
-    }
+// ===== STEP CARDS ANIMATION =====
+function animateSteps() {
+  gsap.fromTo('.step-card', { y: 50, opacity: 0 }, {
+    y: 0, opacity: 1, duration: 0.6, ease: 'power3.out', stagger: 0.12
   });
-});
+  gsap.fromTo('.step-number', { scale: 0.3, opacity: 0 }, {
+    scale: 1, opacity: 1, duration: 0.5, ease: 'back.out(1.7)', stagger: 0.15, delay: 0.1
+  });
+}
 
-// ===== GSAP: PARALLAX BLOBS =====
-document.querySelectorAll('section').forEach(function(section) {
-  var blobs = section.querySelectorAll('.blob');
-  blobs.forEach(function(blob, i) {
-    gsap.to(blob, {
-      y: (i % 2 === 0) ? -120 : 80,
-      ease: 'none',
-      scrollTrigger: {
-        trigger: section,
-        start: 'top bottom',
-        end: 'bottom top',
-        scrub: 1 + i * 0.5
+// ===== SEEDLING ANIMATION =====
+function animateSeedling() {
+  var stem = document.querySelector('.sl-stem');
+  var leaves = document.querySelectorAll('.sl-leaf');
+  if (!stem) return;
+  gsap.to(stem, { strokeDashoffset: 0, duration: 1.2, ease: 'power2.out', delay: 0.3 });
+  leaves.forEach(function(leaf, i) {
+    gsap.to(leaf, { transform: 'scale(1)', duration: 0.7, ease: 'back.out(1.5)', delay: 1 + i * 0.2 });
+  });
+}
+
+// ===== CHART ANIMATION =====
+function animateChart() {
+  var bars = document.querySelectorAll('.chart-bar');
+  var trend = document.querySelector('.chart-trend');
+  bars.forEach(function(bar, i) {
+    gsap.to(bar, { transform: 'scaleY(1)', duration: 0.5, ease: 'power2.out', delay: 0.1 + i * 0.12 });
+  });
+  if (trend) {
+    gsap.to(trend, { strokeDashoffset: 0, duration: 1.4, ease: 'power2.out', delay: 0.7 });
+  }
+}
+
+// ===== COUNTER ANIMATION =====
+function animateCounters(slide) {
+  var targets = slide.querySelectorAll('.price-amount[data-target]');
+  targets.forEach(function(el) {
+    var target = parseInt(el.getAttribute('data-target'), 10);
+    var prefix = el.getAttribute('data-prefix') || '';
+    var obj = { val: 0 };
+    gsap.to(obj, {
+      val: target,
+      duration: 1.6,
+      ease: 'power2.out',
+      delay: 0.3,
+      onUpdate: function() {
+        var v = Math.round(obj.val);
+        var str = v.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '\u00A0');
+        el.textContent = prefix + str;
       }
     });
   });
-});
-
-// ===== GSAP: FEATURE BADGE SWEEP =====
-document.querySelectorAll('.feature-badge').forEach(function(badge, i) {
-  ScrollTrigger.create({
-    trigger: badge,
-    start: 'top 85%',
-    once: true,
-    onEnter: function() {
-      setTimeout(function() {
-        badge.classList.add('swept');
-      }, i * 100);
-    }
-  });
-});
-
-// ===== GSAP: PACKAGE ADDED LIST ITEMS =====
-document.querySelectorAll('.package-added li').forEach(function(li, i) {
-  ScrollTrigger.create({
-    trigger: li,
-    start: 'top 90%',
-    once: true,
-    onEnter: function() {
-      setTimeout(function() {
-        li.classList.add('active');
-      }, i * 150);
-    }
-  });
-});
-
-// ===== GSAP: BRAND LOGO SPRING-IN =====
-document.querySelectorAll('.brand-logo-card').forEach(function(card, i) {
-  ScrollTrigger.create({
-    trigger: card,
-    start: 'top 90%',
-    once: true,
-    onEnter: function() {
-      setTimeout(function() {
-        card.classList.add('active');
-      }, i * 80);
-    }
-  });
-});
-
-// ===== RIPPLE EFFECT ON CLICKABLE ELEMENTS =====
-function addRipple(e) {
-  var el = this;
-  var rect = el.getBoundingClientRect();
-  var ripple = document.createElement('span');
-  ripple.className = 'ripple-effect';
-  var size = Math.max(rect.width, rect.height) * 1.5;
-  ripple.style.width = size + 'px';
-  ripple.style.height = size + 'px';
-  ripple.style.left = (e.clientX - rect.left - size / 2) + 'px';
-  ripple.style.top = (e.clientY - rect.top - size / 2) + 'px';
-  el.appendChild(ripple);
-  setTimeout(function() { ripple.remove(); }, 700);
 }
 
-document.querySelectorAll('.feature-badge, .client-tag').forEach(function(el) {
-  el.addEventListener('click', addRipple);
-});
-
-// ===== MAGNETIC CURSOR ON PRICE CARDS =====
-document.querySelectorAll('.price-card').forEach(function(btn) {
-  btn.addEventListener('mousemove', function(e) {
-    var rect = btn.getBoundingClientRect();
-    var x = e.clientX - rect.left - rect.width / 2;
-    var y = e.clientY - rect.top - rect.height / 2;
-    btn.style.transform = 'translateY(-3px) translate(' + (x * 0.15) + 'px, ' + (y * 0.15) + 'px)';
-    btn.style.transition = 'transform 0.1s linear, box-shadow 0.3s';
+// ===== HERO SVG CONSTELLATION ANIMATION =====
+(function() {
+  var lines = document.querySelectorAll('.constellation-lines line');
+  lines.forEach(function(line, i) {
+    gsap.fromTo(line, { opacity: 0 }, { opacity: 0.3, duration: 0.5, delay: 1.5 + i * 0.1 });
   });
 
-  btn.addEventListener('mouseleave', function() {
-    btn.style.transform = '';
-    btn.style.transition = 'transform 0.5s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s';
+  // Pulse rings
+  gsap.to('.pulse-ring-1', {
+    scale: 1.3, opacity: 0, duration: 2, ease: 'power2.out',
+    repeat: -1, transformOrigin: '260px 260px'
   });
-});
-
-// ===== TILT EFFECT ON CARDS =====
-document.querySelectorAll('.step-card, .contact-card').forEach(function(card) {
-  card.addEventListener('mousemove', function(e) {
-    var rect = card.getBoundingClientRect();
-    var x = (e.clientX - rect.left) / rect.width - 0.5;
-    var y = (e.clientY - rect.top) / rect.height - 0.5;
-    card.style.transform = 'perspective(1000px) rotateX(' + (-y * 12) + 'deg) rotateY(' + (x * 12) + 'deg) translateY(-4px)';
+  gsap.to('.pulse-ring-2', {
+    scale: 1.4, opacity: 0, duration: 2.5, ease: 'power2.out',
+    repeat: -1, delay: 0.7, transformOrigin: '260px 260px'
   });
 
-  card.addEventListener('mouseleave', function() {
-    card.style.transform = '';
+  // Float dots
+  var floatClass1 = document.querySelectorAll('.float-dot-1');
+  var floatClass2 = document.querySelectorAll('.float-dot-2');
+  var floatClass3 = document.querySelectorAll('.float-dot-3');
+  [floatClass1, floatClass2, floatClass3].forEach(function(group, gi) {
+    group.forEach(function(dot) {
+      gsap.to(dot, {
+        y: -12 - gi * 4,
+        duration: 2 + gi * 0.5,
+        ease: 'sine.inOut',
+        repeat: -1,
+        yoyo: true
+      });
+    });
   });
-});
 
-// ===== GSAP: CONTACT CARDS STAGGER =====
-gsap.from('.contact-card', {
-  y: 60,
-  opacity: 0,
-  duration: 0.6,
-  stagger: 0.1,
-  ease: 'power3.out',
-  scrollTrigger: {
-    trigger: '.contact-grid',
-    start: 'top 80%',
-    once: true
+  // Orbit nodes gentle float
+  var orbitNodes = document.querySelectorAll('#heroSvg circle[stroke="#c0392b"], #heroSvg circle[stroke="var(--gold)"]');
+  orbitNodes.forEach(function(node, i) {
+    if (i > 0) {
+      gsap.to(node, {
+        y: (i % 2 === 0) ? -8 : 8,
+        duration: 2.5 + i * 0.3,
+        ease: 'sine.inOut',
+        repeat: -1,
+        yoyo: true
+      });
+    }
+  });
+})();
+
+// ===== INITIAL STATE =====
+updateUI(0);
+gsap.set(track, { x: 0 });
+
+// Entrance animation for hero slide-inner
+gsap.fromTo('#hero .hero-content', { opacity: 0, x: -40 }, { opacity: 1, x: 0, duration: 1, ease: 'power3.out', delay: 0.2 });
+
+// ===== MOBILE: vertical scroll mode =====
+(function() {
+  var mq = window.matchMedia('(max-width: 767px)');
+  function onMobileChange(e) {
+    if (e.matches) {
+      // Kill GSAP horizontal and enable normal scroll
+      gsap.set(track, { x: 0, clearProps: 'transform' });
+      prevBtn.style.display = 'none';
+      nextBtn.style.display = 'none';
+      dotsWrap.style.display = 'none';
+    }
   }
-});
+  mq.addEventListener('change', onMobileChange);
+  onMobileChange(mq);
+})();
 
-// ===== GSAP: EXTRA CARDS STAGGER =====
-gsap.from('.extra-card', {
-  scale: 0.8,
-  opacity: 0,
-  duration: 0.7,
-  stagger: 0.15,
-  ease: 'back.out(1.4)',
-  scrollTrigger: {
-    trigger: '.growth-extras',
-    start: 'top 80%',
-    once: true
-  }
-});
 </script>
-
 </body>
 </html>
