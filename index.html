@@ -183,6 +183,15 @@ h2 {
 }
 
 h2 .hl, .hl {
+  color: var(--red-bright);
+}
+
+.hero-title .hl {
+  display: inline;
+  white-space: nowrap;
+}
+
+.hero-title .hl .char-reveal {
   background: linear-gradient(135deg, #c0392b 0%, #e74c3c 50%, #c0392b 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -1647,6 +1656,9 @@ window.addEventListener('touchend', function(e) {
     else { goToSlide(currentSlide - 1); }
   }
 }, { passive: true });
+
+// ===== INITIAL SLIDE ENTRANCE =====
+triggerSlideEntrance(0);
 
 // ===== HANDLE RESIZE =====
 window.addEventListener('resize', function() {
